@@ -37,8 +37,8 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, watch, onMounted, onUnmounted } from "vue";
-import { MindGraph, Menu } from "../graph";
+import { ref, watch, onMounted, onUnmounted, defineEmits } from "vue";
+import { MindGraph, Menu, randomUUID } from "../graph";
 
 defineOptions({
   name: "MuMindMap",
@@ -61,6 +61,7 @@ const props = defineProps({
   scaleRatio: { type: Number, default: 1 },
   sharpCorner: { type: Boolean, default: false },
 });
+const emit = defineEmits(['change'])
 const Ctr = "Meta + ";
 const nodeMenuConfig = [
   {
@@ -78,7 +79,7 @@ const nodeMenuConfig = [
   },
   {
     label: "添加同级节点",
-    key: "add",
+    key: "add-parallel",
     icon: "",
     shortcutKey: "Enter",
   },
@@ -208,13 +209,7 @@ onUnmounted(() => {
   graph.value = undefined;
 });
 
-const initGraph = (isInit = true) => {
-  if (graph.value) return;
-  graph.value = createGraph(props);
-  if (props.modelValue && isInit) {
-    graph.value.updateData(props.modelValue, props.edges, {});
-  }
-};
+
 const hideMenu = (el: any, key: string) => {
   el?.querySelector(`[code="${key}"]`).classList.add("hide");
 };
@@ -246,6 +241,7 @@ const getEdgeMenusDom = (item: any) => {
 const getCanvasMenusDom = () => {
   return canvasMenu.value;
 };
+
 const getMenus = () => {
   const toolbar = new Menu({
     className: "active-menu",
@@ -269,11 +265,50 @@ const getMenus = () => {
       return getCanvasMenusDom();
     },
     itemTypes: ["node", "canvas", "edge"],
-    handleMenuClick: (target, item) => {
-
+    handleMenuClick: (target: any, node: any) => {
+      const code = target.getAttribute("code");
+      if (code === 'add-child') {
+        console.log('---node', node);
+        const newItem = {
+          id: randomUUID(),
+          title: "新建模型",
+        };
+        graph.value?.editAddNode(node, newItem);
+        emit('change', {
+          type: 'add-child',
+          data: newItem
+        })
+      } else if (code === 'add-parent') {
+        const newItem = {
+          id: randomUUID(),
+          title: "新建模型",
+        };
+        graph.value?.addParent(node, newItem);
+        emit('change', {
+          type: 'add-parent',
+          data: newItem
+        })
+      } else if (code === 'add-parallel') {
+        const newItem = {
+          id: randomUUID(),
+          title: "新建模型",
+        };
+        graph.value?.addParallelNode(node, newItem);
+        emit('change', {
+          type: 'add-parent',
+          data: newItem
+        })
+      }
     },
   });
   return toolbar;
+};
+const initGraph = (isInit = true) => {
+  if (graph.value) return;
+  graph.value = createGraph(props);
+  if (props.modelValue && isInit) {
+    graph.value.updateData(props.modelValue, props.edges, {});
+  }
 };
 const createGraph = (layoutConfig: any) => {
   const config = {
@@ -393,6 +428,9 @@ const createGraph = (layoutConfig: any) => {
     &:hover {
       background-color: #f3f3f3;
     }
+    span {
+      pointer-events: none;
+    }
   }
   li.hide {
     display: none;
@@ -420,6 +458,35 @@ const createGraph = (layoutConfig: any) => {
     opacity: 1;
     -webkit-transform: translateY(0);
     transform: translateY(0);
+  }
+}
+
+.mindmap-label-edit:empty:before {
+  -webkit-user-modify: read-write-plaintext-only;
+  content: attr(placeholder);
+  opacity: 0.7;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    cursor: pointer;
+    border-radius: 1rem;
+    background-color: rgba(157, 165, 183, 0);
+    background-clip: padding-box;
+    transition: all 0.25s;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    cursor: pointer;
+    background-color: rgba(157, 165, 183, 0.4);
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    cursor: pointer;
+    background-color: rgba(157, 165, 183, 0.7);
   }
 }
 </style>

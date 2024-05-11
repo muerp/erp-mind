@@ -1311,13 +1311,6 @@ export class MindGraph extends TreeGraph {
 
         this.translate(dx, dy);
     }
-    randomUUID() {
-        return "xxxxxxxx4xxxyxxxxxxx".replace(/[xy]/g, function (c) {
-            const r = (Math.random() * 16) | 0,
-                v = c === "x" ? r : (r & 0x3) | 0x8;
-            return v.toString(16);
-        });
-    }
     getLastModel() {
         let maxNode: any;
         let nodes: any[] = []
@@ -1730,7 +1723,7 @@ export class MindGraph extends TreeGraph {
             }
         }
     }
-    editAddNodeById(id: string, item: any, isEdit: boolean = true) {
+    editAddNodeById(id: string, item: any) {
         const node = this.findById(id);
         if (!node) return;
         this.editAddNode(node, item);
@@ -1748,13 +1741,10 @@ export class MindGraph extends TreeGraph {
 
         this.on('afterlayout', () => {
             this.editCollapse(node, true);
-
-
-
             if (isEdit && !this.isMobile) {
                 const newNode = this.findById(newItem.id);
                 const bbox = newNode.getBBox();
-                let { x, y } = this.getClientByPoint(bbox.x, bbox.y);
+                let { x } = this.getClientByPoint(bbox.x, bbox.y);
                 const rect = this.getContainer().getBoundingClientRect();
                 if (x + bbox.width > rect.left + rect.width) {
                     const delta = x + bbox.width - rect.left - rect.width + 50;
@@ -1774,6 +1764,35 @@ export class MindGraph extends TreeGraph {
                 this.editSelectedNodeById(item.id, true);
             }
         }, true)
+        this.layout();
+    }
+
+    addParent(node: any, item: any) {
+        const model = node.getModel();
+        const parent = node.get('parent');
+        const pModel = parent.getModel();
+        const idx = pModel.children.findIndex((r: any) => r.id === model.id);
+        const m = pModel.children[idx];
+        item.children = [{ ...m }];
+        this.removeChild(model.id);
+        pModel.children[idx] = item;
+        pModel.children = this.updateChildrenData(pModel.children, pModel.side, pModel.depth, pModel.sortId);
+        this.layout();
+    }
+    updateChildrenData(children: any[], side: string, sortId: string, depth: number) {
+        return children.map((child, idx) => {
+                child.side = side;
+                return this.createDataFromData(child, depth + 1, -1, sortId + '-' + idx, true);
+            })
+    }
+
+    addParallelNode(node: any, item: any) {
+        const model = node.getModel();
+        const parent = node.get('parent');
+        const pModel = parent.getModel();
+        const idx = pModel.children.findIndex((r: any) => r.id === model.id);
+        pModel.children.splice(idx + 1, 0, item);
+        pModel.children = this.updateChildrenData(pModel.children, pModel.side, pModel.depth, pModel.sortId);
         this.layout();
     }
 
