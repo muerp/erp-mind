@@ -1,0 +1,42 @@
+@font-face {
+  font-family: "iconfont";
+  src: url('iconfont.woff2?t=1715391218280') format('woff2'),
+    url('iconfont.woff?t=1715391218280') format('woff'),
+    url('iconfont.ttf?t=1715391218280') format('truetype');
+}
+
+[class^="icon-"],
+[class*=" icon-"] {
+  font-family: 'iconfont' !important;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-center:before {
+  content: "\e60a";
+}
+
+.icon-full-out:before {
+  content: "\e674";
+}
+
+.icon-full-in:before {
+  content: "\e675";
+}
+
+.icon-zoom-in:before {
+  content: "\ec32";
+}
+
+.icon-zoom-out:before {
+  content: "\ec33";
+}
+
+.icon-add:before {
+  content: "\e606";
+}
+
+.icon-reduce:before {
+  content: "\e69d";
+}

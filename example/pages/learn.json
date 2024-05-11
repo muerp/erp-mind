@@ -1,0 +1,76 @@
+[
+    {
+        "info": {
+            "id": "461c46a75fff5ffe6691",
+            "title": "Accc"
+        },
+        "children": [
+            {
+                "info": {
+                    "id": "1640c2b523400116f7ff0",
+                    "title": "新建模型",
+                    "iconType":1
+                },
+                "children": [
+                    {
+                        "info": {
+                            "id": "1640c2b523400116f7cff0",
+                            "title": "CCCdddd",
+                            "iconType":1,
+                            "iconDetail": {
+                                "marked": false
+                            }
+                        }
+                    },
+                    {
+                        "info": {
+                            "id": "12640c2b593416fd7ff3",
+                            "title": "CeDDDeee",
+                            "iconDetail": {
+                                "marked": true
+                            }
+                        },
+                        "children": [
+                            {
+                                "info": {
+                                    "id": "1640c2bd523400116f7cff0",
+                                    "title": "DFFDDF",
+                                    "iconType":1
+                                }
+                            },
+                            {
+                                "info": {
+                                    "id": "12640c2b5f93416fd7ff3",
+                                    "title": "DFSDSSFDS"
+                                },
+                                "children": [
+                                    {
+                                        "info": {
+                                            "id": "1640c2bc23400116f7cff0",
+                                            "title": "CCCcdDddd",
+                                            "iconType":1
+                                        }
+                                    },
+                                    {
+                                        "info": {
+                                            "id": "12640c2b5f93d6fd7ff3",
+                                            "title": "CeDDDCeee"
+                                        },
+                                        "children": null
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "info": {
+                    "id": "12640c2b593416f7ff3",
+                    "title": "Ceeee"
+                },
+                "children": null
+            }
+        ]
+    }
+]
