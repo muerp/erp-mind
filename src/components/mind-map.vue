@@ -39,6 +39,7 @@
 <script lang="ts" setup>
 import { ref, watch, onMounted, onUnmounted, defineEmits } from "vue";
 import { MindGraph, Menu, randomUUID } from "../graph";
+import { idText } from "typescript";
 
 defineOptions({
   name: "MuMindMap",
@@ -276,27 +277,37 @@ const getMenus = () => {
         graph.value?.editAddNode(node, newItem);
         emit('change', {
           type: 'add-child',
-          data: newItem
+          data: {
+            parentId: node.getModel().id,
+            newItem
+          }
         })
       } else if (code === 'add-parent') {
         const newItem = {
           id: randomUUID(),
           title: "新建模型",
         };
-        graph.value?.addParent(node, newItem);
+        const idx = graph.value?.addParent(node, newItem);
         emit('change', {
           type: 'add-parent',
-          data: newItem
+          data: {
+            newItem,
+            sort: idx,
+          }
         })
       } else if (code === 'add-parallel') {
         const newItem = {
           id: randomUUID(),
           title: "新建模型",
         };
-        graph.value?.addParallelNode(node, newItem);
+        const idx = graph.value?.addParallelNode(node, newItem);
         emit('change', {
-          type: 'add-parent',
-          data: newItem
+          type: 'add-child',
+          data: {
+            parentId: node.get('parent').getModel().id,
+            sort: idx,
+            newItem
+          }
         })
       }
     },

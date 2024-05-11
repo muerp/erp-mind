@@ -1775,15 +1775,16 @@ export class MindGraph extends TreeGraph {
         const m = pModel.children[idx];
         item.children = [{ ...m }];
         this.removeChild(model.id);
-        pModel.children[idx] = item;
+        pModel.children.splice(idx, 0, item);
         pModel.children = this.updateChildrenData(pModel.children, pModel.side, pModel.depth, pModel.sortId);
         this.layout();
+        return idx;
     }
     updateChildrenData(children: any[], side: string, sortId: string, depth: number) {
         return children.map((child, idx) => {
-                child.side = side;
-                return this.createDataFromData(child, depth + 1, -1, sortId + '-' + idx, true);
-            })
+            child.side = side;
+            return this.createDataFromData(child, depth + 1, -1, sortId + '-' + idx, true);
+        })
     }
 
     addParallelNode(node: any, item: any) {
@@ -1794,6 +1795,7 @@ export class MindGraph extends TreeGraph {
         pModel.children.splice(idx + 1, 0, item);
         pModel.children = this.updateChildrenData(pModel.children, pModel.side, pModel.depth, pModel.sortId);
         this.layout();
+        return idx + 1;
     }
 
     editFitCenter() {
