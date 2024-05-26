@@ -244,6 +244,7 @@ function drawAdd(group: any, pos = { x: 0, y: 0 }, index: any, style: any) {
         cursor: 'pointer',
         ...style.btnStyle
     };
+    
     const textStyle = {
         ...style.btnTextStyle,
         cursor: "pointer",
@@ -277,7 +278,7 @@ function drawAdd(group: any, pos = { x: 0, y: 0 }, index: any, style: any) {
     })
     text.animate((ratio: number) => {
         return {
-            fontSize: ratio * 18,
+            fontSize: ratio * 16,
             opacity: ratio
         }
     }, {

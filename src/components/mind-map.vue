@@ -39,7 +39,6 @@
 <script lang="ts" setup>
 import { ref, watch, onMounted, onUnmounted, defineEmits } from "vue";
 import { MindGraph, Menu, randomUUID } from "../graph";
-import { idText } from "typescript";
 
 defineOptions({
   name: "MuMindMap",
@@ -62,7 +61,7 @@ const props = defineProps({
   scaleRatio: { type: Number, default: 1 },
   sharpCorner: { type: Boolean, default: false },
 });
-const emit = defineEmits(['change'])
+const emit = defineEmits(["change"]);
 const Ctr = "Meta + ";
 const nodeMenuConfig = [
   {
@@ -98,7 +97,7 @@ const nodeMenuConfig = [
   },
   {
     label: "仅删除当前节点",
-    key: "delete",
+    key: "delete-cur",
     icon: "",
     shortcutKey: "Shift + Backspace",
   },
@@ -210,7 +209,6 @@ onUnmounted(() => {
   graph.value = undefined;
 });
 
-
 const hideMenu = (el: any, key: string) => {
   el?.querySelector(`[code="${key}"]`).classList.add("hide");
 };
@@ -268,47 +266,58 @@ const getMenus = () => {
     itemTypes: ["node", "canvas", "edge"],
     handleMenuClick: (target: any, node: any) => {
       const code = target.getAttribute("code");
-      if (code === 'add-child') {
-        console.log('---node', node);
+      console.log("---node", node);
+      if (code === "add-child") {
         const newItem = {
           id: randomUUID(),
           title: "新建模型",
         };
-        graph.value?.editAddNode(node, newItem);
-        emit('change', {
-          type: 'add-child',
+        graph.value?.addNode(node, newItem);
+        emit("change", {
+          type: "add-child",
           data: {
             parentId: node.getModel().id,
-            newItem
-          }
-        })
-      } else if (code === 'add-parent') {
+            newItem,
+          },
+        });
+      } else if (code === "add-parent") {
         const newItem = {
           id: randomUUID(),
           title: "新建模型",
         };
         const idx = graph.value?.addParent(node, newItem);
-        emit('change', {
-          type: 'add-parent',
+        emit("change", {
+          type: "add-parent",
           data: {
             newItem,
             sort: idx,
-          }
-        })
-      } else if (code === 'add-parallel') {
+          },
+        });
+      } else if (code === "add-parallel") {
+        //添加同级
         const newItem = {
           id: randomUUID(),
           title: "新建模型",
         };
         const idx = graph.value?.addParallelNode(node, newItem);
-        emit('change', {
-          type: 'add-child',
+        emit("change", {
+          type: "add-child",
           data: {
-            parentId: node.get('parent').getModel().id,
+            parentId: node.get("parent").getModel().id,
             sort: idx,
-            newItem
-          }
-        })
+            newItem,
+          },
+        });
+      } else if (code === "expand") {
+        graph.value?.menuExpand(node, false);
+      } else if (code === "no-expand") {
+        graph.value?.menuExpand(node, true);
+      } else if (code === "delete") {
+        graph.value.deleteNode(node);
+      } else if (code === "delete-cur") {
+        graph.value.deleteOnlyCurrent(node);
+      } else if (code === "add-link") {
+        graph.value?.editSelectLink(node, 2);
       }
     },
   });

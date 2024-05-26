@@ -1,6 +1,5 @@
 import G6 from "@antv/g6";
 // pc端自定义行为
-import { dragMoveSize } from "../variable";
 import {
     getBezierParams,
     getBezierPath,
@@ -49,7 +48,7 @@ G6.registerBehavior("behavior-pc", {
             "canvas:click": "onClickCanvas",
         };
     },
-    onEdgeDouble(evt) {
+    onEdgeDouble(evt: { target: { get: (arg0: string) => any; }; item: any; }) {
         const name = evt.target.get('name');
         if (name === NameString.edgeTitleBg) {
             this.graph.edgeEditLabel(evt.item, evt.target);
@@ -86,7 +85,7 @@ G6.registerBehavior("behavior-pc", {
             }
         }
     },
-    onEdgeDrag(evt) {
+    onEdgeDrag(evt: any) {
         const name = evt.target.get('name');
         if (name === NameString.edgeLinkDot ||
             name === NameString.edgeTitleBg) {
@@ -843,7 +842,7 @@ G6.registerBehavior("behavior-pc", {
                     (children[changeIndex].id === startModel.id)) {
                     return;
                 }
-                let idx = children.findIndex(item => item.id === startModel.id);
+                let idx = children.findIndex((item: any) => item.id === startModel.id);
                 if (idx < changeIndex) {
                     changeIndex -= 1;
                 }

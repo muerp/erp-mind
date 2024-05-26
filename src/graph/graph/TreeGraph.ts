@@ -340,9 +340,9 @@ export class MindGraph extends TreeGraph {
                 btnTextStyle: {
                     fontFamily: 'iconfont',
                     fill: '#fff',
-                    text: '\ueaf3',
+                    text: '\ue606',
                     fontWeight: 600,
-                    fontSize: 10,
+                    fontSize: 6,
                 }
             },
             linkDotStyle: {
@@ -1723,12 +1723,12 @@ export class MindGraph extends TreeGraph {
             }
         }
     }
-    editAddNodeById(id: string, item: any) {
+    addNodeById(id: string, item: any) {
         const node = this.findById(id);
         if (!node) return;
-        this.editAddNode(node, item);
+        this.addNode(node, item);
     }
-    editAddNode(node: any, item: any, isEdit: boolean = true) {
+    addNode(node: any, item: any, isEdit: boolean = true) {
         const model = node.getModel();
         const newItem = this.createDataFromData({ ...item }, model.realDepth + 1, -1, model.sortId + '-' + model.children.length);
         delete newItem.sort;
@@ -1776,15 +1776,20 @@ export class MindGraph extends TreeGraph {
         item.children = [{ ...m }];
         this.removeChild(model.id);
         pModel.children.splice(idx, 0, item);
-        pModel.children = this.updateChildrenData(pModel.children, pModel.side, pModel.depth, pModel.sortId);
+        this.updateChildrenData(pModel.children, pModel.side, pModel.depth, pModel.sortId);
         this.layout();
         return idx;
     }
     updateChildrenData(children: any[], side: string, sortId: string, depth: number) {
-        return children.map((child, idx) => {
-            child.side = side;
-            return this.createDataFromData(child, depth + 1, -1, sortId + '-' + idx, true);
-        })
+        // return children.map((child, idx) => {
+        //     child.side = side;
+        //     return this.createDataFromData(child, depth + 1, -1, sortId + '-' + idx, true);
+        // })
+
+        for (let i=0; i<children.length; ++i) {
+            children[i].side = side;
+            children[i] = this.createDataFromData(children[i], depth + 1, -1, sortId + '-' + i, true);
+        }
     }
 
     addParallelNode(node: any, item: any) {
@@ -1793,7 +1798,7 @@ export class MindGraph extends TreeGraph {
         const pModel = parent.getModel();
         const idx = pModel.children.findIndex((r: any) => r.id === model.id);
         pModel.children.splice(idx + 1, 0, item);
-        pModel.children = this.updateChildrenData(pModel.children, pModel.side, pModel.depth, pModel.sortId);
+        this.updateChildrenData(pModel.children, pModel.side, pModel.depth, pModel.sortId);
         this.layout();
         return idx + 1;
     }
@@ -1859,7 +1864,7 @@ export class MindGraph extends TreeGraph {
         deleteIds.forEach((id: string) => {
             const node = this.findById(id);
             if (!node) return;
-            this.editDeleteNode(node, isNotify);
+            this.deleteNode(node, isNotify);
         })
         deleteEdges.forEach((edge: any) => {
             let idx = this._edges.findIndex(r => r.source === edge.source && r.target === edge.target);
@@ -1899,8 +1904,8 @@ export class MindGraph extends TreeGraph {
             this.closeLinkBtn();
         }
     }
-    editDeleteNode(node: any, isNotify = true) {
-        let parentNode = node.get('parent');
+    deleteNode(node: any, isNotify = true) {
+        const parentNode = node.get('parent');
         let nextSelectNodeId = parentNode?.get('id');
         const model = node.getModel();
 
@@ -1928,6 +1933,17 @@ export class MindGraph extends TreeGraph {
             this.editSelectedNodeById(nextSelectNodeId, true, true);
         }
         return deleteEdges;
+    }
+    deleteOnlyCurrent(node: any) {
+        const parent = node.get('parent');
+        const model = node.getModel();
+        const pModel = parent.getModel();
+        const idx = pModel.children.findIndex((r: any) => r.id === model.id);
+        if (idx === -1) return;
+        this.removeChild(node.get('id'));
+        pModel.children.splice(idx, 0, ...model.children);
+        this.updateChildrenData(pModel.children, pModel.side, pModel.depth, pModel.sortId);
+        this.layout();
     }
     editSelectedNodeById(id: string, selected = true, isNotify = false) {
         const node = this.findById(id);
