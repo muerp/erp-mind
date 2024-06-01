@@ -12,7 +12,6 @@ import {
 } from "./node-utils";
 // startY 由于不同浏览器的展示规则不一致，导致垂直居中会存在1px误差，所以需要细调
 const diffY = isSafari ? -3 : isWin ? 2 : 0;
-export const isC = false;
 export function getAttribute(cfg: any) {
     const {
         width,
@@ -172,7 +171,7 @@ export function handleNodeHover(state: any, node: any) {
 
 export function handleNodeSelected(state: any, node: any) {
     const model = node.getModel();
-    const { btnSelectedStyle, btnTypeStyle, btnStyle, style, btnTextStyle } = model;
+    const { btnSelectedStyle, btnStyle, btnTextStyle } = model;
     // 选中节点置于最上方
     const group = node.getContainer();
     // 设置节点边框颜色
@@ -192,17 +191,17 @@ export function handleNodeSelected(state: any, node: any) {
     }
     const collapseNode = group.findAllByName(NameString.collapseCircle)[0];
     const collapseText = group.findAllByName('collapse-text')[0];
-    if (!model.collapsed || model.children.length === 0 || model.children[0].visible === false) {
-        collapseText?.attr({
-            y: collapseNode.attrs.y - 0.8,
-            text: (model.children.length == 0 || model.children[0].visible === false) && !isC ? ReduceIcon : AddIcon
-        });
-    } else {
+    if (model.children.length > 0 && model.collapsed) {
         collapseText?.attr({
             y: collapseNode.attrs.y,
             text: model.children.length,
             textAlign: 'center',
             textBaseline: 'middle',
+        });
+    } else {   
+        collapseText?.attr({
+            y: collapseNode.attrs.y - 0.8,
+            text: state && ( (model.children.length > 0 && !model.collapsed) || model.children.length === 0) ? AddIcon : ReduceIcon
         });
     }
     if (state) {

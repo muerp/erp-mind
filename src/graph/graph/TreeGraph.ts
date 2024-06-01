@@ -15,7 +15,6 @@ import {
 } from "../nodes/node-utils.js";
 import { IDString, NameString, NodeType, nameHideRoot } from "../constaints/index.js";
 import { EdgeTextPadding, IconLabelSize, defaultLabelText } from "../nodeTemplate/constant.js";
-import { isC } from "../nodes/node-draw-utils.js";
 import { openSingleLink } from "../utils/config.js";
 import { dragNodeMove, dragNodeReady } from "./check-drag-node.js";
 export interface ShortcutKey {

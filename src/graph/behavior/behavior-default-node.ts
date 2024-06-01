@@ -1,6 +1,5 @@
 import G6 from "@antv/g6";
 import { NameString, NodeType } from "../constaints";
-import { isC } from "../nodes/node-draw-utils";
 G6.registerBehavior("behavior-default-node", {
     getEvents() {
         return {
@@ -22,23 +21,15 @@ G6.registerBehavior("behavior-default-node", {
         const name = evt.target.get('name');
         if (name !== NameString.nodeContainer) return;
         if (node.getModel().children.length>0) {
-            if (isC) {
-                node.setState("selected", true);
-            } else {
-                node.setState("hover", true);
-            }
+            node.setState("hover", true);
             node.toFront();
         }
     },
     onMouseLeaveNode(evt: any) {
         const { item: node } = evt;
         if (node.getModel().type === NodeType.defaultNode) {
-            if (node.hasState(isC? 'selected':'hover')) {
-                if (isC) {
-                    node.setState("selected", false);
-                } else {
-                    node.setState("hover", false);
-                }
+            if (node.hasState('hover')) {
+                node.setState("hover", false);
                 node.toBack();
             }
         }
