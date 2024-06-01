@@ -241,52 +241,15 @@ export class MindGraph extends TreeGraph {
                 stroke: 'transparent',
                 lineWidth: 2
             },
-            //节点背景颜色数组
-            btnStyles: [
-                { fill: themeColor, stroke: 'transparent', lineWidth: 2 },
-                { fill: '#e9e9e9', stroke: '#e9e9e9', lineWidth: 2 }
-            ],
             //节点hover默认颜色
             btnHoverStyle: {
-                stroke: themeColor
+                stroke: themeColor,
+                lineWidth: 1,
             },
-            //节点hover多层样式
-            btnHoverStyles: [
-                {
-                    stroke: themeColor,
-                }
-            ],
             //节点selected边框颜色
             btnSelectedStyle: {
                 stroke: themeColor,
-            },
-            //节点selected多层边框颜色
-            btnSelectedStyles: [
-                {
-                    stroke: themeColor,
-                }
-            ],
-            //重要果实hover和selected样式
-            btnTypeStyles: {
-                1: {
-                    hoverFill: '#ffd6d6',
-                    selectedFill: '#ffd6d6',
-                    hoverStroke: '#DF7271',
-                    selectStroke: '#DF7271',
-                    hoverTextColor: '#333',
-                    selectTextColor: '#333',
-                    show: false,    //图标是否显示
-                }
-            },
-            //重要果实的配置
-            specialStyle: {
-                1: {
-                    fontFamily: 'iconfont',
-                    fill: '#DF7271',
-                    text: '\ue604',
-                    fontSize: 14,
-                    fontWeight: 700
-                }
+                lineWidth: 2,
             },
             //节点文本默认颜色
             btnTextStyle: {
@@ -300,11 +263,6 @@ export class MindGraph extends TreeGraph {
                 maxCount: 16,
                 maxWidth: 200,
             },
-            //节点文本颜色数组
-            btnTextStyles: [
-                { fill: '#fff', fontWeight: 700, fontSize: 16 },
-                { fill: '#444', fontWeight: 600, fontSize: 14 }
-            ],
             //collapsed
             //数字文本颜色
             collapsedNumberTextStyle: {
@@ -628,8 +586,7 @@ export class MindGraph extends TreeGraph {
     }: any) {
         name === "" && (name = placeholderText);
         const btnTextStyle = {
-            ...this.nodeStyle.btnTextStyle,
-            ...this.nodeStyle.btnTextStyles[depth]
+            ...this.nodeStyle.btnTextStyle
         }
         const fontSize = btnTextStyle.fontSize || 12;
         const fontWeight = btnTextStyle.fontWeight || 400;
@@ -647,14 +604,7 @@ export class MindGraph extends TreeGraph {
             fontWeight: descFontWeight
         })
         const height = nameStyle.height + (desStyle?.height || 0) + 2;
-        let beforeWidth = 0, afterWidth = 0;
-        if (depth >= 2) {
-            beforeWidth = 0;
-            afterWidth = 0;
-        } else {
-            beforeWidth = 10;
-            afterWidth = 10;
-        }
+        const beforeWidth = 0, afterWidth = 0;
 
         const obj = {
             title: name,
@@ -684,10 +634,10 @@ export class MindGraph extends TreeGraph {
             nameStyle,
             desStyle,
             ...this.nodeStyle,
-            btnStyle: this.nodeStyle.btnStyles[depth] || this.nodeStyle.btnStyle,
+            btnStyle:  this.nodeStyle.btnStyle,
             btnTextStyle,
-            btnHoverStyle: this.nodeStyle.btnHoverStyles[depth] || this.nodeStyle.btnHoverStyle,
-            btnSelectedStyle: this.nodeStyle.btnSelectedStyles[depth] || this.nodeStyle.btnSelectedStyle,
+            btnHoverStyle: this.nodeStyle.btnHoverStyle,
+            btnSelectedStyle: this.nodeStyle.btnSelectedStyle,
             btnTypeStyle,
         };
         return obj;

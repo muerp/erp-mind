@@ -122,33 +122,22 @@ export function handleNodeHover(state: any, node: any) {
     // 设置节点边框颜色
     const wrapper = getWrapper(group);
     const title = group.findAllByName('title')[0];
-    if (btnHoverStyle.stroke) {
-        if (state) {
-            if (btnTypeStyle && style.headIcon && btnTypeStyle.hoverStroke) {
-                wrapper?.attr("stroke", btnTypeStyle.hoverStroke);
-            } else if (btnHoverStyle && btnHoverStyle.stroke) {
-                wrapper?.attr("stroke", btnHoverStyle.stroke);
-            } else if (style.headIcon && style.headIcon.fill) {
-                wrapper?.attr("stroke", style.headIcon.fill);
-            } else {
-                wrapper?.attr("stroke", btnStyle.stroke);
-            }
-        } else if (style.headIcon && style.headIcon.fill) {
-            wrapper?.attr("stroke", style.headIcon.fill);
-        } else {
-            wrapper?.attr("stroke", btnStyle.stroke);
-        }
-        // wrapper?.attr("stroke", state ? (style.headIcon && btnTypeStyle?.hoverStroke ? btnTypeStyle.hoverStroke : btnHoverStyle.stroke) : (style.headIcon ? style.headIcon.fill : btnStyle.stroke));
-    }
-    if (btnHoverStyle.fill) {
-        wrapper?.attr("fill", state && btnHoverStyle.fill ? (style.headIcon && btnTypeStyle && btnTypeStyle.hoverFill ? btnTypeStyle.hoverFill : btnHoverStyle.fill) : btnStyle.fill);
-    }
 
-    if (style.headIcon && btnTypeStyle && btnTypeStyle.hoverTextColor) {
-        title?.attr('fill', state ? btnTypeStyle.hoverTextColor : btnTextStyle.fill)
-    } else if (btnHoverStyle && btnHoverStyle.textColor) {
-        title?.attr('fill', state ? btnHoverStyle.textColor : btnTextStyle.fill)
+    if (state) {
+        if (btnHoverStyle.stroke) {
+            wrapper?.attr("stroke", btnHoverStyle.stroke);
+            wrapper?.attr('lineWidth', btnHoverStyle.lineWidth || 1);
+        }
+        if (btnHoverStyle.fill) {
+            wrapper?.attr("fill", btnHoverStyle.fill)
+        }
+        if (btnHoverStyle.textColor) {
+            title?.attr('fill', btnHoverStyle.textColor)
+        }
     } else {
+        wrapper?.attr("stroke", btnStyle.stroke);
+        wrapper?.attr('lineWidth', btnStyle.lineWidth || 2);
+        wrapper?.attr("fill", btnStyle.fill);
         title?.attr('fill', btnTextStyle.fill)
     }
 
@@ -166,9 +155,7 @@ export function handleNodeHover(state: any, node: any) {
     if (!model.collapsed) {
         collapseText?.attr({
             y: collapseNode.attrs.y - 0.8,
-            // text: isC? '\ueaf3':'\ueaf5'
             text: model.children.length == 0 || model.children[0].visible === false ? AddIcon : ReduceIcon //+-
-            // text: model.children.length == 0 || model.children[0].visible === false ? '\ueaf5' : '\ueaf3'
         });
     } else {
         collapseNode?.attr({
@@ -191,23 +178,11 @@ export function handleNodeSelected(state: any, node: any) {
     // 设置节点边框颜色
     const wrapper = getWrapper(group);
     const title = group.findAllByName('title')[0];
-    if (style.headIcon) {
-        if (state && btnTypeStyle) {
-            wrapper?.attr("fill", btnTypeStyle.selectedFill ? btnTypeStyle.selectedFill : btnStyle.fill);
-            wrapper?.attr("stroke", btnTypeStyle.selectStroke ? btnTypeStyle.selectStroke : (style.headIcon?.fill || btnStyle.fill));
-            title?.attr('fill', btnTypeStyle.selectTextColor ? btnTypeStyle.selectTextColor : btnTextStyle.fill)
-        } else {
-            wrapper?.attr("fill", btnStyle.fill);
-            wrapper?.attr("stroke", (style.headIcon?.fill || btnStyle.fill));
-            title?.attr('fill', btnTextStyle?.fill)
-        }
-    } else {
-        wrapper?.attr("stroke", state ? btnSelectedStyle.stroke && btnSelectedStyle.stroke : btnStyle.stroke);
-        wrapper?.attr("fill", state && btnSelectedStyle.fill ? btnSelectedStyle.fill : btnStyle.fill);
-        title?.attr('fill', state && btnSelectedStyle.textColor ? btnSelectedStyle.textColor : btnTextStyle.fill)
-    }
 
-
+    wrapper?.attr("stroke", state ? btnSelectedStyle.stroke : btnStyle.stroke);
+    wrapper?.attr("lineWidth", state ? btnSelectedStyle.lineWidth : btnStyle.lineWidth);
+    wrapper?.attr("fill", state && btnSelectedStyle.fill ? btnSelectedStyle.fill : btnStyle.fill);
+    title?.attr('fill', state && btnSelectedStyle.textColor ? btnSelectedStyle.textColor : btnTextStyle.fill)
 
 
     const collapseGroup = group.findAllByName('collapse-group')[0];
@@ -220,8 +195,7 @@ export function handleNodeSelected(state: any, node: any) {
     if (!model.collapsed || model.children.length === 0 || model.children[0].visible === false) {
         collapseText?.attr({
             y: collapseNode.attrs.y - 0.8,
-            // text: '\ueaf3',//ueaf5
-            text: (model.children.length == 0 || model.children[0].visible === false) && !isC ?  ReduceIcon:AddIcon
+            text: (model.children.length == 0 || model.children[0].visible === false) && !isC ? ReduceIcon : AddIcon
         });
     } else {
         collapseText?.attr({
@@ -244,7 +218,7 @@ function drawAdd(group: any, pos = { x: 0, y: 0 }, index: any, style: any) {
         cursor: 'pointer',
         ...style.btnStyle
     };
-    
+
     const textStyle = {
         ...style.btnTextStyle,
         cursor: "pointer",

@@ -44,18 +44,10 @@ const themeConfig = {
       stroke: "transparent",
       lineWidth: 2,
     },
-    btnStyles: [
-      { fill: "#5a6ef0", stroke: "#5a6ef0", lineWidth: 2 },
-      { fill: "#222222", stroke: "#222222", lineWidth: 2 },
-    ],
     btnTextStyle: {
       fill: "#fff",
       fontSize: 13,
     },
-    btnTextStyles: [
-      { fill: "#fff", fontWeight: 700, fontSize: 16 },
-      { fill: "#fff", fontWeight: 600, fontSize: 14 },
-    ],
   },
 };
 const theme = ref("default");
