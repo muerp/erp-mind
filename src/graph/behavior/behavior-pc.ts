@@ -14,6 +14,7 @@ import { IDString, NameString, NodeType } from "../constaints";
 import { EdgeTextPadding } from "../nodeTemplate/constant";
 import { distance } from "../utils/math";
 import { dragNodeMove, dragNodeReady } from "../graph/check-drag-node";
+import { MindGraph } from "..";
 
 
 G6.registerBehavior("behavior-pc", {
@@ -49,31 +50,34 @@ G6.registerBehavior("behavior-pc", {
         };
     },
     onEdgeDouble(evt: { target: { get: (arg0: string) => any; }; item: any; }) {
+        const graph = this.graph as MindGraph;
         const name = evt.target.get('name');
         if (name === NameString.edgeTitleBg) {
-            this.graph.edgeEditLabel(evt.item, evt.target);
+            graph.edgeEditLabel(evt.item, evt.target);
         }
     },
-    onClickEdge(evt) {
-        if (this.graph.tempVariable.moveLinkEdge) {
+    onClickEdge(evt: any) {
+        const graph = this.graph as MindGraph;
+        if (graph.tempVariable.moveLinkEdge) {
             return;
         }
 
         const name = evt.item.getModel().name;
         if (evt.target.get('name') === NameString.edgeTitleBg) {
             // 可以做单点编辑
-            // return
+            return
         }
         if (name === NameString.edgeLink) {
-            this.graph.editClickEdge(evt.item, true);
+            graph.editClickEdge(evt.item, true);
         }
     },
-    onEdgeDragStart(evt) {
+    onEdgeDragStart(evt: any) {
         this.isDragging = true;
+        const graph = this.graph as MindGraph;
         const name = evt.target.get('name');
         if (name === NameString.edgeTitleBg) {
             const { dotPos } = evt.item.getModel();
-            let pos = this.graph.getPointByClient(evt.clientX, evt.clientY);
+            let pos = graph.getPointByClient(evt.clientX, evt.clientY);
             this.edgeDragOffset = {
                 x: pos.x - dotPos.x,
                 y: pos.y - dotPos.y,
@@ -86,10 +90,11 @@ G6.registerBehavior("behavior-pc", {
         }
     },
     onEdgeDrag(evt: any) {
+        const graph = this.graph as MindGraph;
         const name = evt.target.get('name');
         if (name === NameString.edgeLinkDot ||
             name === NameString.edgeTitleBg) {
-            let pos = this.graph.getPointByClient(evt.clientX, evt.clientY);
+            let pos = graph.getPointByClient(evt.clientX, evt.clientY);
             const { start, end, labelStyle, labelStyle1, labelStyle2, labelType } = evt.item.getModel();
             pos.x -= this.edgeDragOffset.x;
             pos.y -= this.edgeDragOffset.y;
@@ -170,12 +175,13 @@ G6.registerBehavior("behavior-pc", {
             });
         }
     },
-    onEdgeDragEnd(evt) {
+    onEdgeDragEnd(evt: any) {
+        const graph = this.graph as MindGraph;
         this.isDragging = false;
         const name = evt.target.get('name');
         if (name === NameString.edgeLinkDot ||
             name === NameString.edgeTitleBg) {
-            const pos = this.graph.getPointByClient(evt.clientX, evt.clientY);
+            const pos = graph.getPointByClient(evt.clientX, evt.clientY);
             pos.x -= this.edgeDragOffset.x;
             pos.y -= this.edgeDragOffset.y;
             const { start, end } = evt.item.getModel();

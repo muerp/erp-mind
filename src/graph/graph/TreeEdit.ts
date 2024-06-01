@@ -136,7 +136,10 @@ export class TreeEdit {
 
     onBlur(e) {
         this.isFocus = false;
-
+        if (this.node && this.node.destroyed) {
+            this.node = undefined;
+            return
+        };
         this.graph.emit(EventName.change, {
             type: MindmapEvent.blur,
             options: {
@@ -305,8 +308,8 @@ export class TreeEdit {
         this.focusEnd();
     }
 
-    show(node, isReady = false) {
-        if (this.node && this.node.getModel().id === this.node.getModel().id && this.visibility) return;
+    show(node: any, isReady = false) {
+        if (this.node && !this.node.destroyed && this.node.getModel().id === this.node.getModel().id && this.visibility) return;
         if (!this.el || !node._cfg?.bboxCache) return;
         this.visibility = !isReady;
         this.type = EditType.node;

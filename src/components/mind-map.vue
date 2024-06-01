@@ -38,8 +38,8 @@
 </template>
 <script lang="ts" setup>
 import { ref, watch, onMounted, onUnmounted, defineEmits } from "vue";
-import { MindGraph, Menu, randomUUID } from "../graph";
-
+import { MindGraph, Menu, randomUUID, MindmapEvent } from "../graph";
+import { Menus, nodeMenuConfig, canvasMenuConfig } from "./menu";
 defineOptions({
   name: "MuMindMap",
 });
@@ -62,129 +62,6 @@ const props = defineProps({
   sharpCorner: { type: Boolean, default: false },
 });
 const emit = defineEmits(["change"]);
-const Ctr = "Meta + ";
-const nodeMenuConfig = [
-  {
-    label: "打开文档",
-    key: "open",
-    icon: "",
-    shortcutKey: Ctr + "O",
-    hide: false,
-  },
-  {
-    label: "添加子级节点",
-    key: "add-child",
-    icon: "",
-    shortcutKey: "Tab",
-  },
-  {
-    label: "添加同级节点",
-    key: "add-parallel",
-    icon: "",
-    shortcutKey: "Enter",
-  },
-  {
-    label: "添加父节点",
-    key: "add-parent",
-    icon: "",
-    shortcutKey: "Shift + Tab",
-  },
-  {
-    label: "删除节点",
-    key: "delete",
-    icon: "",
-    shortcutKey: "Delete",
-  },
-  {
-    label: "仅删除当前节点",
-    key: "delete-cur",
-    icon: "",
-    shortcutKey: "Shift + Backspace",
-  },
-  {
-    label: "关联模型",
-    key: "add-link",
-    icon: "",
-    shortcutKey: Ctr + "L",
-  },
-  {
-    label: "复制模型",
-    key: "copy",
-    icon: "",
-    shortcutKey: Ctr + "C",
-  },
-  {
-    label: "剪切模型",
-    key: "cut",
-    icon: "",
-    shortcutKey: Ctr + "X",
-  },
-  {
-    label: "粘贴模型",
-    key: "pasted",
-    icon: "",
-    shortcutKey: Ctr + "V",
-  },
-  {
-    label: "展开模型",
-    key: "expand",
-    icon: "",
-    shortcutKey: "",
-  },
-  {
-    label: "收起模型",
-    key: "no-expand",
-    icon: "",
-    shortcutKey: "",
-  },
-  {
-    label: "查看关联",
-    key: "view-link",
-    icon: "",
-    shortcutKey: "",
-  },
-];
-const canvasMenuConfig = [
-  {
-    label: "回到根节点",
-    key: "root",
-    icon: "",
-    shortcutKey: Ctr + "Enter",
-    hide: false,
-  },
-  {
-    label: "适应画布",
-    key: "zoom-fit",
-    icon: "",
-    shortcutKey: Ctr + "I",
-    hide: false,
-  },
-  {
-    label: "展开所有",
-    key: "expand-all",
-    icon: "",
-    shortcutKey: "",
-    hide: false,
-  },
-  {
-    label: "收起所有",
-    key: "no-expand-all",
-    icon: "",
-    shortcutKey: "",
-  },
-  {
-    label: "放大",
-    key: "zoom-out",
-    icon: "",
-    shortcutKey: "",
-  },
-  {
-    label: "缩小",
-    key: "zoom-in",
-    icon: "",
-    shortcutKey: "",
-  },
-];
 const mindmap = ref();
 const graph = ref();
 const mindmapInput = ref();
@@ -199,9 +76,37 @@ const defaultMode = ["behavior-canvas", "drag-canvas", "behavior-default-node"];
 
 const editMode = ["behavior-shortcut"];
 const isMobile = ref(false);
+const shortcuts = ref([]);
 
+const formatMenus = (menus: any[]) => {
+  const p = [];
+  menus.forEach((menu) => {
+    if (menu.shortcutKey) {
+      p.push({
+        key: menu.code,
+        label: menu.label,
+        control: menu.control,
+        Event: (graph: MindGraph) => {
+          if (!graph._curSelectedNode) return;
+          if (Menus[menu.key]) {
+            const node = graph._curSelectedNode;
+            Menus[menu.key].handler(graph, node, emit);
+            return;
+          }
+        },
+      });
+    }
+  });
+  return p;
+};
 onMounted(() => {
   editMode.unshift("drag-canvas", "behavior-canvas", "behavior-pc");
+  const p = formatMenus(nodeMenuConfig);
+  shortcuts.value = p;
+  editMode.push({
+    type: "behavior-shortcut",
+    hotList: shortcuts.value,
+  });
   initGraph();
 });
 onUnmounted(() => {
@@ -266,62 +171,20 @@ const getMenus = () => {
     itemTypes: ["node", "canvas", "edge"],
     handleMenuClick: (target: any, node: any) => {
       const code = target.getAttribute("code");
-      console.log("---node", node);
-      if (code === "add-child") {
-        const newItem = {
-          id: randomUUID(),
-          title: "新建模型",
-        };
-        graph.value?.addNode(node, newItem);
-        emit("change", {
-          type: "add-child",
-          data: {
-            parentId: node.getModel().id,
-            newItem,
-          },
-        });
-      } else if (code === "add-parent") {
-        const newItem = {
-          id: randomUUID(),
-          title: "新建模型",
-        };
-        const idx = graph.value?.addParent(node, newItem);
-        emit("change", {
-          type: "add-parent",
-          data: {
-            newItem,
-            sort: idx,
-          },
-        });
-      } else if (code === "add-parallel") {
-        //添加同级
-        const newItem = {
-          id: randomUUID(),
-          title: "新建模型",
-        };
-        const idx = graph.value?.addParallelNode(node, newItem);
-        emit("change", {
-          type: "add-child",
-          data: {
-            parentId: node.get("parent").getModel().id,
-            sort: idx,
-            newItem,
-          },
-        });
-      } else if (code === "expand") {
-        graph.value?.menuExpand(node, false);
-      } else if (code === "no-expand") {
-        graph.value?.menuExpand(node, true);
-      } else if (code === "delete") {
-        graph.value.deleteNode(node);
-      } else if (code === "delete-cur") {
-        graph.value.deleteOnlyCurrent(node);
-      } else if (code === "add-link") {
-        graph.value?.editSelectLink(node, 2);
+      if (Menus[code]) {
+        Menus[code].handler(graph.value, node, emit);
+        return;
       }
     },
   });
   return toolbar;
+};
+const createEdge = (options) => {
+  if (options.type !== 2) {
+    graph.value.editCreateEdge(options.data, options.type);
+  } else {
+    graph.value.editCreateEdge(options.data, options.type);
+  }
 };
 const initGraph = (isInit = true) => {
   if (graph.value) return;
@@ -329,6 +192,11 @@ const initGraph = (isInit = true) => {
   if (props.modelValue && isInit) {
     graph.value.updateData(props.modelValue, props.edges, {});
   }
+  graph.value.on("change", (e) => {
+    if (e.type === MindmapEvent.edgeCreate) {
+      createEdge(e.options);
+    }
+  });
 };
 const createGraph = (layoutConfig: any) => {
   const config = {
@@ -395,23 +263,24 @@ const createGraph = (layoutConfig: any) => {
       mode: props.mode,
       links: props.links,
       collapsedAll: false,
-      shortcuts: [
-        {
-          key: "Tab",
-          label: "添加子节点",
-          Event: (_: any) => {
-            console.log("--添加子节点--");
-          },
-        },
-        {
-          key: "x",
-          label: "剪切节点",
-          control: ["cmd", "ctrl"],
-          Event: (_: any) => {
-            console.log("--剪切节点--");
-          },
-        },
-      ],
+      shortcuts: shortcuts.value,
+      //   shortcuts: [
+      //     {
+      //       key: "Tab",
+      //       label: "添加子节点",
+      //       Event: (node: any) => {
+      //         console.log("--添加子节点--", node);
+      //       },
+      //     },
+      //     {
+      //       key: "x",
+      //       label: "剪切节点",
+      //       control: ["cmd", "ctrl"],
+      //       Event: (_: any) => {
+      //         console.log("--剪切节点--");
+      //       },
+      //     },
+      //   ],
     }
   );
   graph.selectEditEnabled = true;
