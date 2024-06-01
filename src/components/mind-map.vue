@@ -34,19 +34,38 @@
         </span>
       </li>
     </ul>
+    <div class="mind-toolbar-layer">
+      <div class="mind-content">
+        <ul ref="toolbarMenu" class="mind-toolbar">
+          <li
+            v-for="item in toolbarMenus"
+            :key="item.key"
+            v-show="!item.hide"
+            :class="item.active ? 'active' : ''"
+            @click="onToolbar(item)"
+          >
+            <el-button>
+              <i class="toolbar-icon" :class="item.icon"></i>
+            </el-button>
+            <div class="tollbar-label">
+              {{ item.label }}
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
 import { ref, watch, onMounted, onUnmounted, defineEmits } from "vue";
 import { MindGraph, Menu, randomUUID, MindmapEvent } from "../graph";
-import { Menus, nodeMenuConfig, canvasMenuConfig } from "./menu";
+import { Menus, nodeMenuConfig, canvasMenuConfig, ToolbarMenus } from "./menu";
 defineOptions({
   name: "MuMindMap",
 });
 const props = defineProps({
   // 脑图数据
   modelValue: { required: true },
-
   hideEdge: { type: Boolean, default: false },
   defaultNodeStyle: { type: Object, default: {} },
   defaultEdgeStyle: { type: Object, default: {} },
@@ -67,6 +86,8 @@ const graph = ref();
 const mindmapInput = ref();
 const nodeMenu = ref();
 const canvasMenu = ref();
+const toolbarMenus = ref(ToolbarMenus);
+const toolbarMenu = ref();
 watch(
   () => props.modelValue,
   () => {}
@@ -171,7 +192,8 @@ const getMenus = () => {
     itemTypes: ["node", "canvas", "edge"],
     handleMenuClick: (target: any, node: any) => {
       const code = target.getAttribute("code");
-      if (Menus[code]) {
+      console.log("-code--", code);
+      if (Menus[code] && Menus[code].handler) {
         Menus[code].handler(graph.value, node, emit);
         return;
       }
@@ -179,6 +201,7 @@ const getMenus = () => {
   });
   return toolbar;
 };
+const getToolbars = () => {};
 const createEdge = (options) => {
   if (options.type !== 2) {
     graph.value.editCreateEdge(options.data, options.type);
@@ -193,6 +216,10 @@ const initGraph = (isInit = true) => {
     graph.value.updateData(props.modelValue, props.edges, {});
   }
   graph.value.on("change", (e) => {
+    if (Menus[e.type]) {
+      Menus[e.type].handler(graph.value, e.options.node, emit);
+      return;
+    }
     if (e.type === MindmapEvent.edgeCreate) {
       createEdge(e.options);
     }
@@ -291,91 +318,15 @@ const createGraph = (layoutConfig: any) => {
   // }, 500);
   return graph;
 };
+
+const onToolbar = (item) => {
+  if (!graph.value) return;
+  if (item.key === "hide-link") {
+    item.active = !item.active;
+    item.label = item.active ? "显示关联" : "隐藏关联";
+    graph.value.setEdgeVisible(item.active);
+  }
+};
 </script>
 
-<style lang="scss">
-.mu-mind-map {
-  position: relative;
-  outline: none;
-}
-.mind-menu {
-  color: #333;
-  margin: 10px;
-  padding: 6px 0;
-  box-shadow: 0 4px 12px 0 hsla(0, 0%, 69%, 0.5);
-  background-color: #fff;
-  border-radius: 4px;
-  display: none;
-  li {
-    list-style: none;
-    padding: 6px 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    // transition: all 0.25s;
-    &:hover {
-      background-color: #f3f3f3;
-    }
-    span {
-      pointer-events: none;
-    }
-  }
-  li.hide {
-    display: none;
-  }
-  animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-.mind-shortcut {
-  margin-left: 3rem;
-  color: #999;
-  font-size: 13px;
-}
-.active-menu {
-  .mind-menu {
-    display: block;
-  }
-}
-@keyframes slideIn {
-  0% {
-    opacity: 0;
-    -webkit-transform: translateY(10px);
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    -webkit-transform: translateY(0);
-    transform: translateY(0);
-  }
-}
-
-.mindmap-label-edit:empty:before {
-  -webkit-user-modify: read-write-plaintext-only;
-  content: attr(placeholder);
-  opacity: 0.7;
-
-  &::-webkit-scrollbar {
-    height: 6px;
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    cursor: pointer;
-    border-radius: 1rem;
-    background-color: rgba(157, 165, 183, 0);
-    background-clip: padding-box;
-    transition: all 0.25s;
-  }
-
-  &:hover::-webkit-scrollbar-thumb {
-    cursor: pointer;
-    background-color: rgba(157, 165, 183, 0.4);
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    cursor: pointer;
-    background-color: rgba(157, 165, 183, 0.7);
-  }
-}
-</style>
+<style lang="scss"></style>

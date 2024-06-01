@@ -560,11 +560,11 @@ G6.registerBehavior("behavior-pc", {
         this.graph.tempVariable.moveLinkEdge = undefined;
         this.moveLinkBegin = undefined;
     },
-    onClickCanvas(evt) {
+    onClickCanvas(evt: any) {
         this.graph.cancelSelect();
         this.graph.closeLinkBtn();
     },
-    onClickNode(evt) {
+    onClickNode(evt: any) {
         if (this.moveLinkBegin) {
             return;
         }

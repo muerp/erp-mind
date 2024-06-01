@@ -1,7 +1,68 @@
 import { ElNotification } from "element-plus";
 import { MindGraph, randomUUID } from "..";
 
+
 const Ctr = "Meta + ";
+
+export const ToolbarMenus = [
+    {
+        icon: 'icon-relevance',
+        label: '隐藏关联',
+        key: 'hide-link',
+        handler() {
+
+        }
+    },
+    {
+        icon: 'icon-full-out',
+        label: '全屏',
+        key: 'fullscreen',
+        handler() {
+
+        }
+    },
+    {
+        icon: 'icon-full-out',
+        label: '全屏',
+        key: 'fullscreen',
+        handler() {
+
+        }
+    },
+    {
+        icon: 'icon-full-out',
+        label: '全屏',
+        key: 'fullscreen',
+        handler() {
+
+        }
+    },
+    {
+        icon: 'icon-full-out',
+        label: '全屏',
+        key: 'fullscreen',
+        handler() {
+
+        }
+    },
+    {
+        icon: 'icon-full-out',
+        label: '全屏',
+        key: 'fullscreen',
+        handler() {
+
+        }
+    },
+    {
+        icon: 'icon-full-out',
+        label: '全屏',
+        key: 'fullscreen',
+        handler() {
+
+        }
+    },
+]
+
 export const nodeMenuConfig = [
     {
         label: "打开文档",
@@ -107,6 +168,8 @@ export const canvasMenuConfig = [
         icon: "",
         shortcutKey: Ctr + "Enter",
         hide: false,
+        code: 'enter',
+        control: ["cmd", "ctrl"],
     },
     {
         label: "适应画布",
@@ -114,6 +177,8 @@ export const canvasMenuConfig = [
         icon: "",
         shortcutKey: Ctr + "I",
         hide: false,
+        code: 'i',
+        control: ["cmd", "ctrl"],
     },
     {
         label: "展开所有",
@@ -132,13 +197,18 @@ export const canvasMenuConfig = [
         label: "放大",
         key: "zoom-out",
         icon: "",
-        shortcutKey: "",
+        shortcutKey: Ctr + "+",
+        code: '+',
+        control: ["cmd", "ctrl"],
+
     },
     {
         label: "缩小",
         key: "zoom-in",
         icon: "",
-        shortcutKey: "",
+        shortcutKey: Ctr + "-",
+        code: '-',
+        control: ["cmd", "ctrl"],
     },
 ];
 
@@ -213,12 +283,12 @@ export const Menus = {
     },
     'expand': {
         handler: (graph: MindGraph, node: any, _: (key: string, data?: any) => void) => {
-            graph.menuExpand(node, false);
+            graph.editCollapse(node, false);
         }
     },
     'no-expand': {
         handler: (graph: MindGraph, node: any, _: (key: string, data?: any) => void) => {
-            graph.menuExpand(node, true);
+            graph.editCollapse(node, true);
         }
     },
     'delete': {
@@ -269,5 +339,35 @@ export const Menus = {
                 message: 'Cut success!!!',
             })
         }
-    }
+    },
+    'root': {
+        handler: (graph: MindGraph, __: any, _: (key: string, data?: any) => void) => {
+            graph.editFitCenter();
+        }
+    },
+    'zoom-fit': {
+        handler: (graph: MindGraph, __: any, _: (key: string, data?: any) => void) => {
+            graph.editFitCenter();
+        }
+    },
+    'expand-all': {
+        handler: (graph: MindGraph, __: any, _: (key: string, data?: any) => void) => {
+            graph.setCollapsedAll(true);
+        }
+    },
+    'no-expand-all': {
+        handler: (graph: MindGraph, __: any, _: (key: string, data?: any) => void) => {
+            graph.setCollapsedAll(false);
+        }
+    },
+    'zoom-out': {
+        handler: (graph: MindGraph, __: any, _: (key: string, data?: any) => void) => {
+            graph.editZoomOut();
+        }
+    },
+    'zoom-in': {
+        handler: (graph: MindGraph, __: any, _: (key: string, data?: any) => void) => {
+            graph.editZoomIn();
+        }
+    },
 }

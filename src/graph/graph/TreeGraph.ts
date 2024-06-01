@@ -205,15 +205,31 @@ export class MindGraph extends TreeGraph {
         return false;
     }
     setCollapsedAll(enabled: boolean) {
-        this.collapsedAll = enabled;
-        if (enabled) {
-            this.data(this.get('data'));
-            this.layout();
-        } else {
-            this.data(this.tempData);
-            this.layout();
+        const data = this.get('data');
+        if (data.children) {
+            data.children.forEach((node: any) => {
+                this.updateCollapsed(node, !enabled);
+            })
         }
+        if (enabled) {
 
+        } else {
+
+        }
+        this.layout();
+
+        // this.collapsedAll = enabled;
+        // const data = this.get('data');
+        // if (!enabled) {
+        //     if (data.children) {
+        //         data.children.forEach((item: any) => {
+        //             item.collapsed = true;
+        //         })
+        //     }
+        // }
+        // this.data(data);
+        // this.layout();
+        // this.collapsedAll = false;
     }
     setTheme(theme: any) {
         const themeColor = theme.nodeStyle && theme.nodeStyle.themeColor || '#5a6ef0';
@@ -561,6 +577,7 @@ export class MindGraph extends TreeGraph {
         if (isReadyCache && (this._cache[id] === false || this._cache[id] === true)) {
             isCollapsed = !this._cache[id];
         }
+        isCollapsed = this.collapsedAll ? false : isCollapsed;
         const data: NodeData = {
             isHor: item.isHor,
             id: id,
@@ -569,7 +586,7 @@ export class MindGraph extends TreeGraph {
             sortId,
             hideNum: item.hideNum,
             isSubView: isSubView || false,
-            collapsed: this.collapsedAll ? false : isCollapsed,
+            collapsed: isCollapsed,
             children: [],
             _children: [],
             isRoot: depth < 1,
@@ -1535,7 +1552,6 @@ export class MindGraph extends TreeGraph {
     repaintEdge(node?: any) {
         if (!this._hideEdge) {
             this._edges.forEach((options: any) => {
-
                 let p = this.findById(options.id);
                 if (p) return false;
                 let s = this.findById(options.source);
@@ -1584,7 +1600,7 @@ export class MindGraph extends TreeGraph {
     editDisabled() {
         this._editor?.blur();
     }
-    menuExpand(node: any, expand: any) {
+    menuExpand(node: any, expand: boolean) {
         const model = node.getModel();
         if (model.collapsed != expand) {
             model.collapsed = expand;
@@ -1615,7 +1631,7 @@ export class MindGraph extends TreeGraph {
         }
     }
     editCollapse(node: any, expand = false) {
-        let model = node.getModel();
+        const model = node.get('model');
         if (expand) {
             if (model.collapsed) {
                 model.collapsed = false;
@@ -1623,104 +1639,64 @@ export class MindGraph extends TreeGraph {
             }
             return;
         }
-        if (isC) {
-            if ((!node.hasState('selected') && !model.collapsed) || model.children.length === 0) {
-                //如果是hover 或 没有子节点----添加
-                this.emit(EventName.change, {
-                    type: MindmapEvent.nodeAdd,
-                    options: {
-                        node
-                    }
-                })
-            } else if (!model.collapsed) {
-                //收起节点
-                model.collapsed = true;
-                this._cache[model.id] = false;
-                //判断是否有当前选中，有则去掉_tempCollapsedSelected
-                if (this._curSelectedNode || this.tempVariable.linkNode) {
-                    const ids = this.getChildrenIds(model);
-                    //排除自己
-                    ids.splice(0, 1);
-                    if (this._curSelectedNode) {
-                        this._tempCollapsedSelected = this._curSelectedNode.getModel().id;
-                        if (ids.includes(this._curSelectedNode.getModel().id)) {
-                            this.cancelSelect();
-                        }
-                    }
-                    if (this.tempVariable.linkNode && ids.includes(this.tempVariable.linkNode.getModel().id)) {
-                        this.deleteLinkBtn();
-                        this.tempVariable.linkNode = undefined;
-                    }
-                }
-                this.layout();
-            } else {
-                //展开节点
-                model.collapsed = false;
-                this._cache[model.id] = true;
-                this.layout();
-                this.repaintEdge();
 
-                if (this._tempCollapsedSelected && !this._curSelectedNode) {
-                    this.editSelectedNode(this.findById(this._tempCollapsedSelected), true, false);
+        if ((node.hasState('selected') && !model.collapsed) || model.children.length === 0) {
+            //如果是hover 或 没有子节点----添加
+            this.emit(EventName.change, {
+                type: MindmapEvent.nodeAdd,
+                options: {
+                    node
                 }
-                this._tempCollapsedSelected = undefined;
-
-                this.emit(EventName.change, {
-                    type: MindmapEvent.nodeCollapsed,
-                    options: {
-                        node
-                    }
-                })
+            })
+        } else if (!model.collapsed) {
+            //收起节点
+            model.collapsed = true;
+            const m = this.findDataById(model.id)
+            if (m) {
+                m.collapsed = true;
             }
+            this._cache[model.id] = false;
+
+            //判断是否有当前选中，有则去掉_tempCollapsedSelected
+            if (this._curSelectedNode || this.tempVariable.linkNode) {
+                //排除自己
+                const ids = this.getChildrenIds(model);
+                ids.splice(0, 1);
+                if (this._curSelectedNode) {
+                    this._tempCollapsedSelected = this._curSelectedNode.getModel().id;
+                    if (ids.includes(this._curSelectedNode.getModel().id)) {
+                        this.cancelSelect();
+                    }
+                }
+                if (this.tempVariable.linkNode && ids.includes(this.tempVariable.linkNode.getModel().id)) {
+                    this.deleteLinkBtn();
+                    this.tempVariable.linkNode = undefined;
+                }
+            }
+            this.layout();
         } else {
-            if ((node.hasState('selected') && !model.collapsed) || model.children.length === 0) {
-                //如果是hover 或 没有子节点----添加
-                this.emit(EventName.change, {
-                    type: MindmapEvent.nodeAdd,
-                    options: {
-                        node
-                    }
-                })
-            } else if (!model.collapsed) {
-                //收起节点
-                model.collapsed = true;
-                this._cache[model.id] = false;
-                //判断是否有当前选中，有则去掉_tempCollapsedSelected
-                if (this._curSelectedNode || this.tempVariable.linkNode) {
-                    const ids = this.getChildrenIds(model);
-                    //排除自己
-                    ids.splice(0, 1);
-                    if (this._curSelectedNode) {
-                        this._tempCollapsedSelected = this._curSelectedNode.getModel().id;
-                        if (ids.includes(this._curSelectedNode.getModel().id)) {
-                            this.cancelSelect();
-                        }
-                    }
-                    if (this.tempVariable.linkNode && ids.includes(this.tempVariable.linkNode.getModel().id)) {
-                        this.deleteLinkBtn();
-                        this.tempVariable.linkNode = undefined;
-                    }
-                }
-                this.layout();
-            } else {
-                //展开节点
-                model.collapsed = false;
-                this._cache[model.id] = true;
-                this.layout();
-                this.repaintEdge();
-
-                if (this._tempCollapsedSelected && !this._curSelectedNode) {
-                    this.editSelectedNode(this.findById(this._tempCollapsedSelected), true, false);
-                }
-                this._tempCollapsedSelected = undefined;
-
-                this.emit(EventName.change, {
-                    type: MindmapEvent.nodeCollapsed,
-                    options: {
-                        node
-                    }
-                })
+            //展开节点
+            model.collapsed = false;
+            const m = this.findDataById(model.id)
+            if (m) {
+                m.collapsed = false;
             }
+            this._cache[model.id] = true;
+            this.layout();
+            this.repaintEdge();
+
+            if (this._tempCollapsedSelected && !this._curSelectedNode) {
+                this.editSelectedNode(this.findById(this._tempCollapsedSelected), true, false);
+            }
+            this._tempCollapsedSelected = undefined;
+
+            this.emit(EventName.change, {
+                type: MindmapEvent.nodeCollapsed,
+                options: {
+                    node
+                }
+            })
+
         }
     }
     addNodeById(id: string, item: any) {
@@ -1854,8 +1830,8 @@ export class MindGraph extends TreeGraph {
     }
 
     removeAllEdges(model: any) {
-        let ids = this.getChildrenIds(model);
-        let d = this._edges.filter(item => ids.includes(item.source) || ids.includes(item.target));
+        const ids = this.getChildrenIds(model);
+        const d = this._edges.filter(item => ids.includes(item.source) || ids.includes(item.target));
         this._edges = this._edges.filter(item => !ids.includes(item.source) && !ids.includes(item.target));
         return d;
     }
@@ -2270,7 +2246,7 @@ export class MindGraph extends TreeGraph {
         this.data(this.get('data'))
         this.layout();
 
-        p.edges.forEach(edge => {
+        p.edges.forEach((edge: any) => {
             const idx = this._edges.findIndex(r => r.target !== edge.target && r.source === edge.source);
             if (idx === -1) {
                 edge.id = getLinkId(edge.source, edge.target);

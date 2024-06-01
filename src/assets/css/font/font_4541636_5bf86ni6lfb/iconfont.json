@@ -1,0 +1,93 @@
+{
+  "id": "4541636",
+  "name": "erp-mind",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "20668918",
+      "name": "relevance",
+      "font_class": "relevance",
+      "unicode": "e773",
+      "unicode_decimal": 59251
+    },
+    {
+      "icon_id": "1506638",
+      "name": "文档",
+      "font_class": "wendang",
+      "unicode": "e66b",
+      "unicode_decimal": 58987
+    },
+    {
+      "icon_id": "5086088",
+      "name": "新建",
+      "font_class": "xinjian",
+      "unicode": "e64d",
+      "unicode_decimal": 58957
+    },
+    {
+      "icon_id": "15590678",
+      "name": "table",
+      "font_class": "table",
+      "unicode": "e6d4",
+      "unicode_decimal": 59092
+    },
+    {
+      "icon_id": "19504615",
+      "name": "关联关系",
+      "font_class": "link",
+      "unicode": "e629",
+      "unicode_decimal": 58921
+    },
+    {
+      "icon_id": "6843245",
+      "name": "居中",
+      "font_class": "center",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    },
+    {
+      "icon_id": "4922585",
+      "name": "full",
+      "font_class": "full-out",
+      "unicode": "e674",
+      "unicode_decimal": 58996
+    },
+    {
+      "icon_id": "4922586",
+      "name": "full-in",
+      "font_class": "full-in",
+      "unicode": "e675",
+      "unicode_decimal": 58997
+    },
+    {
+      "icon_id": "5732757",
+      "name": "zoom",
+      "font_class": "zoom-in",
+      "unicode": "ec32",
+      "unicode_decimal": 60466
+    },
+    {
+      "icon_id": "5732758",
+      "name": "zoom-out",
+      "font_class": "zoom-out",
+      "unicode": "ec33",
+      "unicode_decimal": 60467
+    },
+    {
+      "icon_id": "1336067",
+      "name": "Add",
+      "font_class": "add",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "29527012",
+      "name": "reduce",
+      "font_class": "reduce",
+      "unicode": "e69d",
+      "unicode_decimal": 59037
+    }
+  ]
+}

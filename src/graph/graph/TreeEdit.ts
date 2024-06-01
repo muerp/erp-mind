@@ -31,7 +31,7 @@ export class TreeEdit {
     type: EditType = EditType.node
     node: any
     target: any
-    changeKey: string
+    changeKey: string = ''
     graph: any
     heightOffset: number = 0
     maxHeight: number = 120
@@ -40,11 +40,11 @@ export class TreeEdit {
     value: string = ''
     originateValue = ''
     timer: any
-    center: { x: 0, y: 0 }
+    center = { x: 0, y: 0 }
     edgeLabelTextStyle: any
     isFocus: boolean = false
     visibility: boolean = true
-    constructor(props) {
+    constructor(props: any) {
         this.el = props.editEl;
         this.el.setAttribute("data-key", "mindmap-input");
         this.graph = props.graph;

@@ -10,7 +10,7 @@ export enum MindmapEvent {
     nodeMove = 'node-move',
     nodeTitleChange = 'node-title-change',
     nodeTitleBlur = 'node-title-blur',
-    nodeAdd = 'node-add',
+    nodeAdd = 'add-child',
     nodeCollapsed = 'node-collapsed',
     nodeDelete = 'node-delete',
     nodeSelect = 'node-select',
