@@ -548,7 +548,7 @@ export class MindGraph extends TreeGraph {
 
         // { style: {...this.nodeStyle.shrinkRoot, visible: true}, title: '' }
         let nStyle: any = this.getNodeStyle({
-            ...Object.assign({}, item, style, { name: item.title, depth, iconDetail: item.iconDetail })
+            ...Object.assign({}, item, style, { name: item.title, depth })
         });
         if (item.type === NodeType.shrinkRoot) {
             nStyle.style.width += this.nodeStyle.shrinkRoot.width * Math.sqrt(2) + 4 + this.nodeStyle.shrinkRoot.virtual;
@@ -596,8 +596,6 @@ export class MindGraph extends TreeGraph {
             type: item.type || NodeType.defaultNode,
             link2: item.link2,
             link1: item.link1,
-            iconType: item.iconType,
-            iconDetail: item.iconDetail,
             labelStyle,
             ...nStyle,
             edgeConfig: this.links[item.id]
@@ -625,10 +623,8 @@ export class MindGraph extends TreeGraph {
         name = placeholderText,
         desc = "",
         depth,
-        iconType = 0,
         nodeStyle,
-        visible = true,
-        iconDetail
+        visible = true
     }: any) {
         name === "" && (name = placeholderText);
         const btnTextStyle = {
@@ -641,15 +637,7 @@ export class MindGraph extends TreeGraph {
         const maxNodeSize = fontSize * maxFontCount + paddingH * 2; // 节点最多显示12个字
         const descFontSize = fontSize - 2; // 描述比标题小两个字号
         let headIcon: any, btnTypeStyle: any;
-        // let headIcon = this.nodeStyle.specialStyle[iconType];
-        // const btnTypeStyle = this.nodeStyle.btnTypeStyles[iconType];
         const imageIconWidth = btnTypeStyle?.show && headIcon ? paddingH : 0;
-
-        if ((!iconDetail && iconType === 1) || (iconDetail && iconDetail.marked)) {
-            headIcon = this.nodeStyle.specialStyle[iconType] || this.nodeStyle.specialStyle[1];
-            btnTypeStyle = this.nodeStyle.btnTypeStyles[iconType] || this.nodeStyle.btnTypeStyles[1];
-        }
-
 
         const nameStyle: any = this.getTextSize(name, btnTextStyle)
 
@@ -1011,9 +999,6 @@ export class MindGraph extends TreeGraph {
         let newModel = this.createDataFromData({ ...oldModel, ...model }, oldModel.realDepth, -1, oldModel.sortId, false)
         if (model.nodeStyle) {
             model.nodeStyle = newModel.nodeStyle
-        }
-        if (newModel.iconDetail) {
-            model.iconDetail = newModel.iconDetail;
         }
         if (newModel.btnTypeStyle) {
             model.btnTypeStyle = newModel.btnTypeStyle;

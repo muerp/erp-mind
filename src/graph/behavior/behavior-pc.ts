@@ -855,13 +855,11 @@ G6.registerBehavior("behavior-pc", {
             }
         }
 
-        let iconType = startModel.iconType === 0 ? 99 : startModel.iconType === 0 ? 99 : startModel.iconType;
         let oldSortId = startModel.sortId;
         const updateParams: any = {
             articleId: startModel.id,
             title: startModel.title,
             parentId: source.getModel().id !== startModel.id && source.getModel().id !== 'root' ? source.getModel().id : undefined,
-            iconType: iconType,
             sort: 0
         }, updateSorts = [];
 

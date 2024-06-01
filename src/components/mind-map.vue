@@ -36,9 +36,25 @@
     </ul>
     <div class="mind-toolbar-layer">
       <div class="mind-content">
-        <ul ref="toolbarMenu" class="mind-toolbar">
+        <ul class="mind-toolbar">
           <li
             v-for="item in toolbarMenus"
+            :key="item.key"
+            v-show="!item.hide"
+            :class="item.active ? 'active' : ''"
+            @click="onToolbar(item)"
+          >
+            <el-button>
+              <i class="toolbar-icon" :class="item.icon"></i>
+            </el-button>
+            <div class="tollbar-label">
+              {{ item.label }}
+            </div>
+          </li>
+        </ul>
+         <ul class="mind-toolbar">
+          <li
+            v-for="item in docMenus"
             :key="item.key"
             v-show="!item.hide"
             :class="item.active ? 'active' : ''"
@@ -59,7 +75,7 @@
 <script lang="ts" setup>
 import { ref, watch, onMounted, onUnmounted, defineEmits } from "vue";
 import { MindGraph, Menu, randomUUID, MindmapEvent } from "../graph";
-import { Menus, nodeMenuConfig, canvasMenuConfig, ToolbarMenus } from "./menu";
+import { Menus, nodeMenuConfig, canvasMenuConfig, ToolbarMenus, DocMenus } from "./menu";
 defineOptions({
   name: "MuMindMap",
 });
@@ -87,7 +103,7 @@ const mindmapInput = ref();
 const nodeMenu = ref();
 const canvasMenu = ref();
 const toolbarMenus = ref(ToolbarMenus);
-const toolbarMenu = ref();
+const docMenus = ref(DocMenus);
 watch(
   () => props.modelValue,
   () => {}
@@ -121,6 +137,8 @@ const formatMenus = (menus: any[]) => {
   return p;
 };
 onMounted(() => {
+  const t = toolbarMenus.value.find(r => r.key === 'hide-link');
+  t.active = props.hideEdge;
   editMode.unshift("drag-canvas", "behavior-canvas", "behavior-pc");
   const p = formatMenus(nodeMenuConfig);
   shortcuts.value = p;
@@ -321,11 +339,7 @@ const createGraph = (layoutConfig: any) => {
 
 const onToolbar = (item) => {
   if (!graph.value) return;
-  if (item.key === "hide-link") {
-    item.active = !item.active;
-    item.label = item.active ? "显示关联" : "隐藏关联";
-    graph.value.setEdgeVisible(item.active);
-  }
+  item.handler(graph.value, item);
 };
 </script>
 

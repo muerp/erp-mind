@@ -6,9 +6,86 @@ const Ctr = "Meta + ";
 
 export const ToolbarMenus = [
     {
+        icon: 'icon-undo',
+        label: '后退',
+        key: 'undo',
+        handler(graph: MindGraph, _: any) {
+            //
+        }
+    },
+    {
+        icon: 'icon-redo',
+        label: '前进',
+        key: 'redo',
+        handler(graph: MindGraph, _: any) {
+            //
+        }
+    },
+    {
+        icon: 'icon-article',
+        label: '创作内容',
+        key: 'create-article',
+        handler(graph: MindGraph, _: any) {
+            //
+        }
+    },
+    // {
+    //     icon: 'icon-link2',
+    //     label: '创建关联',
+    //     key: 'create-label',
+    //     handler(graph: MindGraph, _: any) {
+    //         if (!graph._curSelectedNode || !graph.isNode(graph._curSelectedNode)) return;
+    //         graph.editSelectLink(graph._curSelectedNode, 2);
+    //     }
+    // },
+    {
         icon: 'icon-relevance',
         label: '隐藏关联',
         key: 'hide-link',
+        handler(graph: MindGraph, item: any) {
+            item.active = !item.active;
+            item.label = item.active ? "显示关联" : "隐藏关联";
+            graph.setEdgeVisible(item.active);
+        }
+    },
+    // {
+    //     icon: 'icon-label2',
+    //     label: '隐藏标签',
+    //     key: 'hide-label',
+    //     handler(graph: MindGraph, item: any) {
+    //         item.active = !item.active;
+    //         item.label = item.active ? "显示标签" : "隐藏标签";
+    //         // graph.setEdgeVisible(item.active);
+    //     }
+    // },
+    {
+        icon: 'icon-img',
+        label: '图片',
+        key: 'image',
+        handler() {
+
+        }
+    },
+    {
+        icon: 'icon-icon',
+        label: '图标',
+        key: 'icon',
+        handler() {
+
+        }
+    },
+    {
+        icon: 'icon-fx',
+        label: '公式',
+        key: 'func',
+        handler() {
+
+        }
+    },
+    {
+        icon: 'icon-link1',
+        label: '连接',
+        key: 'link',
         handler() {
 
         }
@@ -21,44 +98,39 @@ export const ToolbarMenus = [
 
         }
     },
-    {
-        icon: 'icon-full-out',
-        label: '全屏',
-        key: 'fullscreen',
-        handler() {
+]
 
+export const DocMenus = [
+    {
+        icon: 'icon-doc',
+        label: '文件夹',
+        key: 'import-doc',
+        handler(graph: MindGraph, _: any) {
+            //
         }
     },
     {
-        icon: 'icon-full-out',
-        label: '全屏',
-        key: 'fullscreen',
-        handler() {
-
+        icon: 'icon-new',
+        label: '导入文件',
+        key: 'import-file',
+        handler(graph: MindGraph, _: any) {
+            //
         }
     },
     {
-        icon: 'icon-full-out',
-        label: '全屏',
-        key: 'fullscreen',
-        handler() {
-
+        icon: 'icon-dr2',
+        label: '导入',
+        key: 'export-in',
+        handler(graph: MindGraph, _: any) {
+            //
         }
     },
     {
-        icon: 'icon-full-out',
-        label: '全屏',
-        key: 'fullscreen',
-        handler() {
-
-        }
-    },
-    {
-        icon: 'icon-full-out',
-        label: '全屏',
-        key: 'fullscreen',
-        handler() {
-
+        icon: 'icon-dc2',
+        label: '导出',
+        key: 'export-out',
+        handler(graph: MindGraph, _: any) {
+            //
         }
     },
 ]
