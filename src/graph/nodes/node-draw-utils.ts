@@ -1,4 +1,4 @@
-import { NodeConfig, ShapeStyle } from "@antv/g6";
+import { ShapeStyle } from "@antv/g6";
 import { NameString } from "../constaints";
 import { EdgeTextPadding } from "../nodeTemplate/constant";
 import { isSafari, isWin } from "../utils/testDevice";
@@ -25,7 +25,7 @@ export function getAttribute(cfg: any) {
         beforeWidth,
         afterWidth,
     } = getShapeStyle(cfg);
-    const { nodeStyle, btnStyle, btnTextStyle, style, btnTypeStyle, nameStyle } = cfg;
+    const { nodeStyle, btnStyle, btnTextStyle, nameStyle } = cfg;
     const NameStyle = {
         x: beforeWidth + paddingH,
         y: (height || 0) * 0.5 + (isWin ? 2 : 0),
@@ -59,8 +59,7 @@ export function getAttribute(cfg: any) {
         radius,
         cursor: "pointer",
         opacity,
-        ...btnStyle,
-        stroke: style.headIcon ? style.headIcon.fill : 'transparent',
+        ...btnStyle
     };
     const TextStyle = {
         x: beforeWidth + paddingH,
@@ -77,8 +76,7 @@ export function getAttribute(cfg: any) {
         opacity,
         textAlign: 'center',
         textBaseline: 'middle',
-        ...(style.headIcon || {}),
-        text: btnTypeStyle?.show ? style.headIcon?.text : undefined,
+        // text: btnTypeStyle?.show ? style.headIcon?.text : undefined,
     };
     const DescWrapper = {
         x: beforeWidth,
@@ -305,7 +303,7 @@ export function drawCollapse(group: any, {
 
 }: any) {
     const { beforeWidth, width, height } = style;
-    let p = beforeWidth + width + collapsedSelectedStyle.r + 5;
+    let p = beforeWidth + width + collapsedSelectedStyle.r + 12;
     if (side === 'left') {
         p = beforeWidth > 0 ? -beforeWidth - collapsedSelectedStyle.r : -beforeWidth - collapsedSelectedStyle.r - 12;
     }

@@ -43,6 +43,8 @@ export const radius = 4;
 export const paddingH = 10;
 export const paddingV = 10;
 
+export const nodePadding = [7, 10, 7, 10];
+
 export const addRadius = 10;
 export const dotRadius = 4;
 export const collapseRadius = 9;

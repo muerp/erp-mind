@@ -99,8 +99,8 @@ export const getBezierParams = (start, end, control) => {
     }
 }
 export const getControlPointByParams = (
-    startPoint,
-    endPoint,
+    startPoint: any,
+    endPoint: any,
     percent: number = 0,
     offset: number = 0,
 ) => {
@@ -120,7 +120,7 @@ export const getControlPointByParams = (
     point.y += perpendicular[1];
     return point;
 };
-export const isAddBtnShow = (node) => {
+export const isAddBtnShow = (node: any) => {
     const group = node.getContainer();
     const collapseText = group.findAllByName('collapse-text')[0];
     const attrs = collapseText.attrs;

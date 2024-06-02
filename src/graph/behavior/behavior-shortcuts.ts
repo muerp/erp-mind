@@ -1,39 +1,48 @@
 import G6 from "@antv/g6";
+import { MindGraph, ShortcutKey } from "..";
 
 G6.registerBehavior("behavior-shortcut", {
   focusCanvasId: "mxs-mindmap_container",
-  options: {
-    hotList: [],
-    shouldBegin: () => true,
-  },
+  hotList: [],
   getEvents: function getEvents() {
     return {
       keydown: "handleKeydown",
     };
   },
-  handleKeydown(evt) {
-    if (document.activeElement !== this.graph.get('container')) return;
-    const { key, shiftKey, ctrlKey, altKey, metaKey } = evt;
-    let handler = this.get("hotList").filter((item) => item.key === key) || [];
+  handleKeydown(evt: any) {
+    const graph = this.graph as MindGraph;
+    if (!graph.isEnter) return;
+    let { key, shiftKey, ctrlKey, altKey, metaKey } = evt;
+    const keys = ['meta', 'shift', 'control', 'alt']
+    const shortcuts: string[] = [];
     if (shiftKey || ctrlKey || altKey || metaKey) {
       if (shiftKey) {
-        handler = handler.filter((item) => item.control?.indexOf("shift") > -1);
+        shortcuts.push('shift');
       }
       if (ctrlKey) {
-        handler = handler.filter((item) => item.control?.indexOf("ctrl") > -1);
-      }
-      if (metaKey) {
-        handler = handler.filter((item) => item.control?.indexOf("cmd") > -1);
+        shortcuts.push('ctrl');
       }
       if (altKey) {
-        handler = handler.filter((item) => item.control?.indexOf("alt") > -1);
+        shortcuts.push('alt');
       }
-    } else if (handler.length === 1 && handler[0].control) {
-      handler = [];
+      if (metaKey) {
+        shortcuts.push('meta');
+      }
     }
-    if (!this.get("shouldBegin")(this.graph) || !handler.length) return;
-    // 识别到快捷键，处理快捷键
-    evt.preventDefault(); // 禁止默认事件
-    handler[0].Event.call(this, this.graph);
+    if (key === '=') {
+      key = '+'
+    }
+    const hotLists = this.hotList as ShortcutKey[];
+    const keyStr = keys.findIndex(r => r === key.toLowerCase()) === -1 ? key.toLowerCase() : '';
+    const shortcutKey = shortcuts.join('+') + (shortcuts.length > 0 && keyStr ? '+' : '') + keyStr;
+
+    const item = hotLists.find(item => {
+      return item.shortcutKey === shortcutKey
+    })
+    if (item) {
+      evt.preventDefault(); // 禁止默认事件
+      item.handler.call(this, graph);
+    }
+
   },
 });

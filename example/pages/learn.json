@@ -2,7 +2,16 @@
     {
         "info": {
             "id": "461c46a75fff5ffe6691",
-            "title": "Accc"
+            "title": "Acccdsfsffdsfsdfsdfsdfsdfdsfdsfsdfsdfsdsfsfsdfsdfsdfsdfsdfsdfdsfsdfsdfdsds",
+            "rectStyle": {
+                "fill": "#c00",
+                "lineWidth": 2
+            },
+            "textStyle": {
+                "fill": "#fff",
+                "fontSize": 18,
+                "lineHeight": 25
+            }
         },
         "children": [
             {

@@ -4,6 +4,7 @@ import { EdgeOptions, InputData, NodeData } from "../interface.js";
 import {
     addRadius,
     maxFontCount,
+    nodePadding,
     paddingH,
     placeholderText,
 } from "../variable.js";
@@ -21,7 +22,8 @@ export interface ShortcutKey {
     key: string
     label: string
     control: boolean
-    Event: (graph: MindGraph) => void
+    shortcutKey?: string,
+    handler: (graph: MindGraph) => void
 }
 export class MindGraph extends TreeGraph {
     tempVariable: any = {
@@ -53,7 +55,7 @@ export class MindGraph extends TreeGraph {
     _cache: any = {}
     collapsedAll: boolean = false;
     hideDragExternalNode = false;
-
+    isEnter: boolean = false;
 
     selectEditEnabled: boolean = false;
     constructor(props: any, options?: any) {
@@ -76,49 +78,14 @@ export class MindGraph extends TreeGraph {
             graph: this,
             editEl: options.editEl
         });
-        if (options.mode === 'edit') {
-            // props.container.addEventListener('keydown', (e: KeyboardEvent) => {
-            //     if ((e.key?.length > 1 && e.key !== 'Enter' && e.key !== 'Backspace' && e.key !== 'Delete') || e.metaKey || e.ctrlKey || e.altKey) return;
-            //     if (this.selectEditEnabled && this._curSelectedNode && !this._editor.isFocus) {
-            //         const model = this._curSelectedNode.getModel();
-            //         if (model.type === NodeType.defaultNode) {
-            //             if ((e.key === 'Backspace' || e.key === 'Enter') && !model.isFocus) {
-            //                 return;
-            //             } else if (e.key === 'Enter' && e.shiftKey) {
-            //                 model.title += '\n';
-            //                 this.updateNodeTitle(this._curSelectedNode, model.title, true, false);
-            //                 return;
-            //             } else if (e.key === 'Enter') {
-            //                 if (model.isFocus) {
-            //                     this.emit(EventName.change, {
-            //                         type: MindmapEvent.nodeTitleBlur,
-            //                         options: {
-            //                             model: model,
-            //                             title: model.title.trim()
-            //                         }
-            //                     })
-            //                     setTimeout(() => {
-            //                         model.isFocus = false;
-            //                         this.layout();
-            //                     }, 50);
-            //                 }
-            //                 return;
-            //             } else if (e.key === 'Backspace' || e.key === 'Delete') {
-            //                 model.title = model.title.substring(0, model.title.length - 1);
-            //                 this.updateNodeTitle(this._curSelectedNode, model.title, true, false);
-            //                 return;
-            //             }
-            //             if (model.title === '新建模型') {
-            //                 model.title = '';
-            //             }
-            //             model.title += e.key;
-            //             this.updateNodeTitle(this._curSelectedNode, model.title, true, false);
-            //         }
-            //     }
-            // })
-        }
         this._windowMove = this.windowMove.bind(this);
         this._windwoUp = this.windwoUp.bind(this);
+        props.container.addEventListener('mouseenter', () => {
+            this.isEnter = true;
+        })
+        props.container.addEventListener('mouseleave', () => {
+            this.isEnter = false;
+        })
     }
     _windowMove: any = undefined;
     _windwoUp: any = undefined;
@@ -198,7 +165,7 @@ export class MindGraph extends TreeGraph {
             return shortcut.key.toLowerCase() === e.key.toLowerCase() && (!shortcut.control || (shortcut.control && (e.ctrlKey || e.metaKey)));
         })
         if (idx !== -1) {
-            this.shortcuts[idx].Event(this);
+            this.shortcuts[idx].handler(this);
             return true;
         }
         return false;
@@ -258,7 +225,7 @@ export class MindGraph extends TreeGraph {
                 fontWeight: 400,
                 fontFamily: '"Microsoft YaHei", "PingFang SC", "Microsoft JhengHei", sans-serif',
                 textBaseline: 'middle',
-                lineHeight: 25,
+                lineHeight: 16,
                 maxCount: 16,
                 maxWidth: 200,
             },
@@ -306,9 +273,9 @@ export class MindGraph extends TreeGraph {
             },
             //link ready
             linkReadyStyle: {
-                stroke: '#3dcc3d',
+                stroke: '#98a2ab',
                 btnStyle: {
-                    fill: '#3dcc3d',
+                    fill: '#98a2ab',
                 },
                 btnTextStyle: {
                     fontFamily: 'iconfont',
@@ -319,7 +286,7 @@ export class MindGraph extends TreeGraph {
                 }
             },
             linkDotStyle: {
-                fill: '#3dcc3d',
+                fill: '#98a2ab',
                 r: 4,
             },
             linkLabelBgStyle: {
@@ -342,7 +309,7 @@ export class MindGraph extends TreeGraph {
                 fontWeight: 400,
                 textAlign: 'left',
                 textBaseline: 'middle',
-                lineHeight: 20,
+                lineHeight: 16,
                 maxWidth: 200
             },
             dragStyle: {
@@ -364,7 +331,7 @@ export class MindGraph extends TreeGraph {
             },
             ...theme.nodeStyle
         }
-        const lineThemeColor = theme.edgeLinkStyle && theme.edgeLinkStyle.lineThemeColor || '#a9ea7a';//#3dcc3d
+        const lineThemeColor = theme.edgeLinkStyle && theme.edgeLinkStyle.lineThemeColor || '#98a2ab';//#3dcc3d
         this.edgeLinkStyle = {
             //双线标签背景
             edgeLabelBgStyle: {
@@ -505,7 +472,7 @@ export class MindGraph extends TreeGraph {
 
         // { style: {...this.nodeStyle.shrinkRoot, visible: true}, title: '' }
         let nStyle: any = this.getNodeStyle({
-            ...Object.assign({}, item, style, { name: item.title, depth })
+            ...Object.assign({}, item, style, { name: item.title })
         });
         if (item.type === NodeType.shrinkRoot) {
             nStyle.style.width += this.nodeStyle.shrinkRoot.width * Math.sqrt(2) + 4 + this.nodeStyle.shrinkRoot.virtual;
@@ -579,21 +546,21 @@ export class MindGraph extends TreeGraph {
     getNodeStyle({
         name = placeholderText,
         desc = "",
-        depth,
         nodeStyle,
-        visible = true
+        visible = true,
+        rectStyle,
+        textStyle,
     }: any) {
         name === "" && (name = placeholderText);
         const btnTextStyle = {
-            ...this.nodeStyle.btnTextStyle
+            ...this.nodeStyle.btnTextStyle,
+            ...textStyle
         }
         const fontSize = btnTextStyle.fontSize || 12;
         const fontWeight = btnTextStyle.fontWeight || 400;
         const descFontWeight = 400;
         const maxNodeSize = fontSize * maxFontCount + paddingH * 2; // 节点最多显示12个字
         const descFontSize = fontSize - 2; // 描述比标题小两个字号
-        let headIcon: any, btnTypeStyle: any;
-        const imageIconWidth = btnTypeStyle?.show && headIcon ? paddingH : 0;
 
         const nameStyle: any = this.getTextSize(name, btnTextStyle)
 
@@ -609,22 +576,16 @@ export class MindGraph extends TreeGraph {
             title: name,
             desc: desc,
             style: {
-                fontSize,
+            fontSize,
                 fontWeight,
                 descFontSize,
                 width: visible ? Math.max(nameStyle.width, desStyle?.width || 0) + paddingH * 2 : 0,
                 maxWidth: maxNodeSize,
                 height: visible ? height : 0,
-                // fillColor,
-                // fontColor,
                 stroke: 2,
-                // strokeColor: "transparent",
                 nameHeight: nameStyle.height,
                 descHeight: desStyle?.height || 0,
                 descFontWeight,
-                imageIconWidth,
-                headIcon,
-                // branchColor,
                 visible,
                 beforeWidth,
                 afterWidth,
@@ -633,11 +594,12 @@ export class MindGraph extends TreeGraph {
             nameStyle,
             desStyle,
             ...this.nodeStyle,
-            btnStyle:  this.nodeStyle.btnStyle,
+            btnStyle:  rectStyle || this.nodeStyle.btnStyle,
             btnTextStyle,
             btnHoverStyle: this.nodeStyle.btnHoverStyle,
             btnSelectedStyle: this.nodeStyle.btnSelectedStyle,
-            btnTypeStyle,
+            textStyle,
+            rectStyle,
         };
         return obj;
     }
@@ -948,12 +910,6 @@ export class MindGraph extends TreeGraph {
         let newModel = this.createDataFromData({ ...oldModel, ...model }, oldModel.realDepth, -1, oldModel.sortId, false)
         if (model.nodeStyle) {
             model.nodeStyle = newModel.nodeStyle
-        }
-        if (newModel.btnTypeStyle) {
-            model.btnTypeStyle = newModel.btnTypeStyle;
-        }
-        if (newModel.headIcon) {
-            model.headIcon = newModel.headIcon;
         }
         model.nameStyle = newModel.nameStyle
         model.style = newModel.style;
@@ -1393,7 +1349,7 @@ export class MindGraph extends TreeGraph {
         if (text === '新建模型') {
             lastWidth = 0;
         }
-        const style = { width, height: lineHeight * line, text: displayStr, maxWidth, lineHeight, lastWidth }
+        const style = { width, height: lineHeight * line + nodePadding[0]+nodePadding[2], text: displayStr, maxWidth, lineHeight, lastWidth }
         return style;
     }
 
@@ -2358,17 +2314,22 @@ export class MindGraph extends TreeGraph {
     changeEdgeShowLabel(show: boolean) {
         this.clickEdgeShowLabel = show;
     }
-    changeEdgeStyle(edge: Edge, options: any) {
+    changeEdgeStyle(edge: Edge, options?: any) {
         const targetId: any = edge.getTarget().getModel().id;
         const sourceId: any = edge.getSource().getModel().id;
         if (!this.links[sourceId]) {
-            this.links[sourceId] = [];
+            this.links[sourceId] = {};
         }
-        this.links[sourceId][targetId] = {
-            ...this.links[sourceId][targetId],
-            ...options
+        if (!options) {
+            delete this.links[sourceId][targetId];
+        } else {
+            this.links[sourceId][targetId] = {
+                ...this.links[sourceId][targetId],
+                ...options
+            }
         }
-        edge.getSource().getModel().edgeConfig = this.links[sourceId];
+        
+        edge.getSource().get('model').edgeConfig = this.links[sourceId];
         edge.draw();
     }
     canHideParent(node: any) {
@@ -2449,5 +2410,10 @@ export class MindGraph extends TreeGraph {
     isNode(node: any) {
         const model = node.getModel();
         return model.type === NodeType.defaultNode;
+    }
+    getEdgeArrorConfig(edge: Edge) {
+        const targetId: any = edge.getTarget().getModel().id;
+        const config = edge.getSource().get('model').edgeConfig;
+        return config? config[targetId]:undefined;
     }
 }

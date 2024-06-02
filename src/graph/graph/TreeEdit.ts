@@ -1,4 +1,4 @@
-import { paddingH, placeholderText, radius } from "../variable";
+import { nodePadding, paddingH, placeholderText, radius } from "../variable";
 import { EventName, MindmapEvent } from "./mindmap-events";
 import { NameString } from "../constaints";
 import { EdgeTextPadding, defaultLabelText } from "../nodeTemplate/constant";
@@ -134,7 +134,7 @@ export class TreeEdit {
         if (!this.node) return;
     }
 
-    onBlur(e) {
+    onBlur(e: any) {
         this.isFocus = false;
         if (this.node && this.node.destroyed) {
             this.node = undefined;
@@ -210,24 +210,24 @@ export class TreeEdit {
         }
     }
 
-    onKeyDown(e) {
+    onKeyDown(e: any) {
         if (!this.node) return;
-        if (!this.visibility) {
-            if (this.graph.checkShortcut(e)) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) {
-                e.preventDefault();
-                return false
-            };
-            this.visibility = true;
+        // if (!this.visibility) {
+        //     if (this.graph.checkShortcut(e)) {
+        //         e.preventDefault();
+        //         return false;
+        //     }
+        //     if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) {
+        //         e.preventDefault();
+        //         return false
+        //     };
+        //     this.visibility = true;
 
-            this.node.hide();
-            this.el.style.opacity = '1';
-            this.el.style.cursor = 'text';
-            this.el.style.pointerEvents = 'auto';
-        }
+        //     this.node.hide();
+        //     this.el.style.opacity = '1';
+        //     this.el.style.cursor = 'text';
+        //     this.el.style.pointerEvents = 'auto';
+        // }
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             this.el.blur();
@@ -235,7 +235,7 @@ export class TreeEdit {
         }
     }
 
-    buildStyle(obj) {
+    buildStyle(obj: any) {
         let res = "";
         for (let key in obj) {
             res += `${key}:${obj[key]};`;
@@ -243,7 +243,7 @@ export class TreeEdit {
         return res;
     }
 
-    showEdgeLabel(node, target) {
+    showEdgeLabel(node: any, target: any) {
         if (!this.el) return;
         this.visibility = true;
         this.type = EditType.edgeLabel;
@@ -281,8 +281,7 @@ export class TreeEdit {
             'color': `${edgeLabelTextStyle.fill}`,
             'border-radius': `${4}px`,
             'max-width': `${this.maxWidth}px`,
-            // 'padding': `${(bgBBox.height-textBBox.height)*0.5}px ${(this.paddingH)*0.5}px`,
-            'padding': `${EdgeTextPadding.v}px ${EdgeTextPadding.h}px`,
+            'padding': `${nodePadding[0]}px ${EdgeTextPadding.h}px ${nodePadding[2]}px`,
         }
         this.el.style.cssText = this.buildStyle({
             ...defaultEditStyle,
@@ -330,7 +329,6 @@ export class TreeEdit {
             btnTextStyle,
             btnSelectedStyle
         } = node._cfg?.model;
-        const titleNode = node.getContainer().findAllByName('title')[0];
         let ratio = this.graph.getZoom();
         let { x, y } = this.graph.getClientByPoint(pointX, pointY);
         this.el.style.cssText = this.buildStyle({
@@ -344,7 +342,7 @@ export class TreeEdit {
             'font-weight': `${btnTextStyle.fontWeight}`,
             'font-style': `${btnTextStyle.fontStyle}`,
             'text-align': 'left',
-            padding: `0 ${paddingH - btnStyle.lineWidth * 0.5}px`,
+            padding: `${nodePadding[0]}px ${paddingH - btnStyle.lineWidth * 0.5}px ${nodePadding[2]}px`,
             'line-height': `${btnTextStyle.lineHeight}px`,
             'background-color': btnStyle.fill === 'transparent' ? '' : btnStyle.fill,
             border: `${stroke}px solid ${btnSelectedStyle.stroke}`,

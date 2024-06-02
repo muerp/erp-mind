@@ -8,9 +8,22 @@
       style="display: none"
       contenteditable="true"
     />
-    <ul ref="nodeMenu" class="mind-menu">
+    <ul ref="nodeMenuRef" class="mind-menu">
       <li
         v-for="item in nodeMenuConfig"
+        :key="item.key"
+        :code="item.key"
+        v-show="!item.hide"
+      >
+        <span class="d-flex">{{ item.label }}</span>
+        <span class="mind-shortcut" v-if="item.shortcutKey">
+          {{ item.shortcutKey }}
+        </span>
+      </li>
+    </ul>
+    <ul ref="edgeMenuRef" class="mind-menu">
+      <li
+        v-for="item in edgeMenuConfig"
         :key="item.key"
         :code="item.key"
         v-show="!item.hide"
@@ -52,7 +65,7 @@
             </div>
           </li>
         </ul>
-         <ul class="mind-toolbar">
+        <ul class="mind-toolbar">
           <li
             v-for="item in docMenus"
             :key="item.key"
@@ -75,7 +88,14 @@
 <script lang="ts" setup>
 import { ref, watch, onMounted, onUnmounted, defineEmits } from "vue";
 import { MindGraph, Menu, randomUUID, MindmapEvent } from "../graph";
-import { Menus, nodeMenuConfig, canvasMenuConfig, ToolbarMenus, DocMenus } from "./menu";
+import {
+  Menus,
+  nodeMenuConfig,
+  edgeMenuConfig,
+  canvasMenuConfig,
+  ToolbarMenus,
+  DocMenus,
+} from "./menu";
 defineOptions({
   name: "MuMindMap",
 });
@@ -100,7 +120,8 @@ const emit = defineEmits(["change"]);
 const mindmap = ref();
 const graph = ref();
 const mindmapInput = ref();
-const nodeMenu = ref();
+const nodeMenuRef = ref();
+const edgeMenuRef = ref();
 const canvasMenu = ref();
 const toolbarMenus = ref(ToolbarMenus);
 const docMenus = ref(DocMenus);
@@ -111,7 +132,7 @@ watch(
 
 const defaultMode = ["behavior-canvas", "drag-canvas", "behavior-default-node"];
 
-const editMode = ["behavior-shortcut"];
+const editMode = [];
 const isMobile = ref(false);
 const shortcuts = ref([]);
 
@@ -120,11 +141,9 @@ const formatMenus = (menus: any[]) => {
   menus.forEach((menu) => {
     if (menu.shortcutKey) {
       p.push({
-        key: menu.code,
         label: menu.label,
-        control: menu.control,
-        Event: (graph: MindGraph) => {
-          if (!graph._curSelectedNode) return;
+        shortcutKey: menu.shortcutKey.toLowerCase().replace(/\s/g, ""),
+        handler: (graph: MindGraph) => {
           if (Menus[menu.key]) {
             const node = graph._curSelectedNode;
             Menus[menu.key].handler(graph, node, emit);
@@ -137,11 +156,12 @@ const formatMenus = (menus: any[]) => {
   return p;
 };
 onMounted(() => {
-  const t = toolbarMenus.value.find(r => r.key === 'hide-link');
+  const t = toolbarMenus.value.find((r) => r.key === "hide-link");
   t.active = props.hideEdge;
   editMode.unshift("drag-canvas", "behavior-canvas", "behavior-pc");
   const p = formatMenus(nodeMenuConfig);
-  shortcuts.value = p;
+  const p2 = formatMenus(canvasMenuConfig);
+  shortcuts.value = p.concat(p2);
   editMode.push({
     type: "behavior-shortcut",
     hotList: shortcuts.value,
@@ -158,28 +178,55 @@ const hideMenu = (el: any, key: string) => {
 };
 
 const getNodeMenusDom = (item: any) => {
-  console.log(nodeMenu.value?.childNodes.forEach);
-  nodeMenu.value?.childNodes.forEach((el: any) => {
+  nodeMenuRef.value?.childNodes.forEach((el: any) => {
     if (el.nodeName === "LI") {
       el.classList.remove("hide");
     }
   });
   const model = item.getModel();
   if (item.get("parent")?.getModel()?.id === "hide-root") {
-    hideMenu(nodeMenu.value, "add-parent");
+    hideMenu(nodeMenuRef.value, "add-parent");
   }
   if (!model.children || model.children.length === 0) {
-    hideMenu(nodeMenu.value, "no-expand");
-    hideMenu(nodeMenu.value, "expand");
+    hideMenu(nodeMenuRef.value, "no-expand");
+    hideMenu(nodeMenuRef.value, "expand");
   } else if (model.collapsed) {
-    hideMenu(nodeMenu.value, "no-expand");
+    hideMenu(nodeMenuRef.value, "no-expand");
   } else {
-    hideMenu(nodeMenu.value, "expand");
+    hideMenu(nodeMenuRef.value, "expand");
   }
-  return nodeMenu.value;
+  return nodeMenuRef.value;
 };
-const getEdgeMenusDom = (item: any) => {
-  return nodeMenu.value;
+const getEdgeMenusDom = (node: any) => {
+  const model = node.getModel();
+  edgeMenuRef.value?.childNodes.forEach((el: any) => {
+    if (el.nodeName === "LI") {
+      el.classList.remove("hide");
+    }
+  });
+  if (model.type === "edge-quadratic") {
+    hideMenu(edgeMenuRef.value, "edge-no-arrow");
+    hideMenu(edgeMenuRef.value, "edge-double-arrow");
+    hideMenu(edgeMenuRef.value, "edge-left-arrow");
+    hideMenu(edgeMenuRef.value, "edge-right-arrow");
+    hideMenu(edgeMenuRef.value, "edge-edit");
+
+  } else if (model.type === "round-poly") {
+    const config = graph.value.getEdgeArrorConfig(node);
+    console.log("-config--", config);
+    if (!config || !config.arrowType) {
+      hideMenu(edgeMenuRef.value, "edge-no-arrow");
+    } else if (config.orientation === 0) {
+      hideMenu(edgeMenuRef.value, "edge-double-arrow");
+    } else if (config.orientation === 1) {
+      hideMenu(edgeMenuRef.value, "edge-right-arrow");
+    } else if (config.orientation === -1) {
+      hideMenu(edgeMenuRef.value, "edge-left-arrow");
+    }
+    hideMenu(edgeMenuRef.value, "link-delete");
+  }
+
+  return edgeMenuRef.value;
 };
 const getCanvasMenusDom = () => {
   return canvasMenu.value;

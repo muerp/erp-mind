@@ -142,8 +142,6 @@ export const nodeMenuConfig = [
         icon: "",
         shortcutKey: Ctr + "O",
         hide: false,
-        code: 'o',
-        control: ["cmd", "ctrl"],
     },
     {
         label: "添加子级节点",
@@ -157,15 +155,12 @@ export const nodeMenuConfig = [
         key: "add-parallel",
         icon: "",
         shortcutKey: "Enter",
-        code: 'enter',
     },
     {
         label: "添加父节点",
         key: "add-parent",
         icon: "",
         shortcutKey: "Shift + Tab",
-        control: ["shift"],
-        code: 'tab',
     },
     {
         label: "删除节点",
@@ -179,40 +174,30 @@ export const nodeMenuConfig = [
         key: "delete-cur",
         icon: "",
         shortcutKey: "Shift + Backspace",
-        control: ["shift"],
-        code: 'backspace',
     },
     {
         label: "关联模型",
         key: "add-link",
         icon: "",
         shortcutKey: Ctr + "L",
-        control: ["cmd", "ctrl"],
-        code: 'l',
     },
     {
         label: "复制模型",
         key: "copy",
         icon: "",
         shortcutKey: Ctr + "C",
-        control: ["cmd", "ctrl"],
-        code: 'c',
     },
     {
         label: "剪切模型",
         key: "cut",
         icon: "",
         shortcutKey: Ctr + "X",
-        control: ["cmd", "ctrl"],
-        code: 'x',
     },
     {
         label: "粘贴模型",
         key: "pasted",
         icon: "",
         shortcutKey: Ctr + "V",
-        control: ["cmd", "ctrl"],
-        code: 'v',
     },
     {
         label: "展开模型",
@@ -240,8 +225,6 @@ export const canvasMenuConfig = [
         icon: "",
         shortcutKey: Ctr + "Enter",
         hide: false,
-        code: 'enter',
-        control: ["cmd", "ctrl"],
     },
     {
         label: "适应画布",
@@ -249,8 +232,6 @@ export const canvasMenuConfig = [
         icon: "",
         shortcutKey: Ctr + "I",
         hide: false,
-        code: 'i',
-        control: ["cmd", "ctrl"],
     },
     {
         label: "展开所有",
@@ -270,8 +251,6 @@ export const canvasMenuConfig = [
         key: "zoom-out",
         icon: "",
         shortcutKey: Ctr + "+",
-        code: '+',
-        control: ["cmd", "ctrl"],
 
     },
     {
@@ -279,15 +258,53 @@ export const canvasMenuConfig = [
         key: "zoom-in",
         icon: "",
         shortcutKey: Ctr + "-",
-        code: '-',
-        control: ["cmd", "ctrl"],
     },
 ];
+export const edgeMenuConfig = [
+    {
+        label: "无箭头",
+        key: "edge-no-arrow",
+        icon: "",
+        hide: false,
+    },
+    {
+        label: "双向箭头",
+        key: "edge-double-arrow",
+        icon: "",
+        hide: false,
+    },
+    {
+        label: "左箭头",
+        key: "edge-left-arrow",
+        icon: "",
+        hide: false,
+    },
+    {
+        label: "右箭头",
+        key: "edge-right-arrow",
+        icon: "",
+        hide: false,
+    },
+    {
+        label: "属性编辑",
+        key: "edge-edit",
+        icon: "",
+        hide: false,
+    },
+    {
+        label: "删除",
+        key: "link-delete",
+        icon: "",
+        hide: false,
+    },
+]
 
 const copyNode = (node: any, isNewUUID = false) => {
     const item: any = {
         id: isNewUUID ? randomUUID() : node.id,
-        title: node.title
+        title: node.title,
+        rectStyle: node.rectStyle,
+        textStyle: node.textStyle
     }
     if (node.children && node.children.length > 0) {
         item.children = node.children.map((child: any) => {
@@ -316,11 +333,13 @@ export const Menus = {
     tempCopyItem: null,
     'add-child': {
         handler: (graph: MindGraph, node: any, emit: (key: string, data?: any) => void) => {
+            if (!node) return;
             addChild(graph, node, emit);
         }
     },
     'add-parent': {
         handler: (graph: MindGraph, node: any, emit: (key: string, data?: any) => void) => {
+            if (!node) return;
             const newItem = {
                 id: randomUUID(),
                 title: "新建模型",
@@ -337,6 +356,7 @@ export const Menus = {
     },
     'add-parallel': {
         handler: (graph: MindGraph, node: any, emit: (key: string, data?: any) => void) => {
+            if (!node) return;
             //添加同级
             const newItem = {
                 id: randomUUID(),
@@ -355,16 +375,19 @@ export const Menus = {
     },
     'expand': {
         handler: (graph: MindGraph, node: any, _: (key: string, data?: any) => void) => {
+            if (!node) return;
             graph.editCollapse(node, false);
         }
     },
     'no-expand': {
         handler: (graph: MindGraph, node: any, _: (key: string, data?: any) => void) => {
+            if (!node) return;
             graph.editCollapse(node, true);
         }
     },
     'delete': {
         handler: (graph: MindGraph, node: any, _: (key: string, data?: any) => void) => {
+            if (!node) return;
             graph.deleteNode(node);
         }
     },
@@ -375,11 +398,13 @@ export const Menus = {
     },
     'add-link': {
         handler: (graph: MindGraph, node: any, _: (key: string, data?: any) => void) => {
+            if (!node) return;
             graph.editSelectLink(node, 2);
         }
     },
     'copy': {
         handler: (__: MindGraph, node: any, _: (key: string, data?: any) => void) => {
+            if (!node) return;
             Menus.tempCopyItem = node.getModel();
             ElNotification({
                 message: 'Copy success!!!',
@@ -388,6 +413,7 @@ export const Menus = {
     },
     'pasted': {
         handler: (graph: MindGraph, node: any, emit: (key: string, data?: any) => void) => {
+            if (!node) return;
             if (!Menus.tempCopyItem) return;
             const item = Menus.tempCopyItem as any
 
@@ -405,6 +431,7 @@ export const Menus = {
     },
     'cut': {
         handler: (graph: MindGraph, node: any, _: (key: string, data?: any) => void) => {
+            if (!node) return;
             Menus.tempCopyItem = node.getModel();
             graph.deleteNode(node);
             ElNotification({
@@ -442,4 +469,29 @@ export const Menus = {
             graph.editZoomIn();
         }
     },
+    'edge-double-arrow': {
+        handler: (graph: MindGraph, node: any, _: (key: string, data?: any) => void) => {
+            graph.changeEdgeStyle(node, {arrowType: 1, orientation: 0});
+        }
+    },
+    'edge-left-arrow': {
+        handler: (graph: MindGraph, node: any, _: (key: string, data?: any) => void) => {
+            graph.changeEdgeStyle(node, {arrowType: 1, orientation: -1});
+        }
+    },
+    'edge-right-arrow': {
+        handler: (graph: MindGraph, node: any, _: (key: string, data?: any) => void) => {
+            graph.changeEdgeStyle(node, {arrowType: 1, orientation: 1});
+        }
+    },
+    'edge-no-arrow': {
+        handler: (graph: MindGraph, node: any, _: (key: string, data?: any) => void) => {
+            graph.changeEdgeStyle(node);
+        }
+    },
+    'link-delete': {
+        handler: (graph: MindGraph, node: any, _: (key: string, data?: any) => void) => {
+            graph.deleteEdge(node);
+        }
+    }
 }
