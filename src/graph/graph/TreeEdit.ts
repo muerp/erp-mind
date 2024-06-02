@@ -281,7 +281,7 @@ export class TreeEdit {
             'color': `${edgeLabelTextStyle.fill}`,
             'border-radius': `${4}px`,
             'max-width': `${this.maxWidth}px`,
-            'padding': `${nodePadding[0]}px ${EdgeTextPadding.h}px ${nodePadding[2]}px`,
+            'padding': `${EdgeTextPadding.v}px ${EdgeTextPadding.h}px`,
         }
         this.el.style.cssText = this.buildStyle({
             ...defaultEditStyle,

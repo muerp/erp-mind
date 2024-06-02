@@ -562,7 +562,7 @@ export class MindGraph extends TreeGraph {
         const maxNodeSize = fontSize * maxFontCount + paddingH * 2; // 节点最多显示12个字
         const descFontSize = fontSize - 2; // 描述比标题小两个字号
 
-        const nameStyle: any = this.getTextSize(name, btnTextStyle)
+        const nameStyle: any = this.getTextSize(name, btnTextStyle, nodePadding[0] + nodePadding[2])
 
         const desStyle: any = this.getTextSize(desc, {
             ...btnTextStyle,
@@ -576,7 +576,7 @@ export class MindGraph extends TreeGraph {
             title: name,
             desc: desc,
             style: {
-            fontSize,
+                fontSize,
                 fontWeight,
                 descFontSize,
                 width: visible ? Math.max(nameStyle.width, desStyle?.width || 0) + paddingH * 2 : 0,
@@ -594,7 +594,7 @@ export class MindGraph extends TreeGraph {
             nameStyle,
             desStyle,
             ...this.nodeStyle,
-            btnStyle:  rectStyle || this.nodeStyle.btnStyle,
+            btnStyle: rectStyle || this.nodeStyle.btnStyle,
             btnTextStyle,
             btnHoverStyle: this.nodeStyle.btnHoverStyle,
             btnSelectedStyle: this.nodeStyle.btnSelectedStyle,
@@ -1292,7 +1292,7 @@ export class MindGraph extends TreeGraph {
     /*
      * attrs: fontSize, fontFamily, fontWeight, lineHeight, maxWidth
     */
-    getTextSize(text: string, attrs: any) {
+    getTextSize(text: string, attrs: any, delta = 0) {
         if (!text) return undefined;
         const ctx = this.get('canvas')?.get('context');
         if (!ctx) return;
@@ -1304,9 +1304,6 @@ export class MindGraph extends TreeGraph {
 
         let displayStr = '';
         let line = 0;
-        // if (!textArr[textArr.length - 1].trim()) {
-        //     textArr.length = textArr.length - 1;
-        // }
         let lastWidth = 0;
 
         textArr.forEach((str: string) => {
@@ -1349,7 +1346,7 @@ export class MindGraph extends TreeGraph {
         if (text === '新建模型') {
             lastWidth = 0;
         }
-        const style = { width, height: lineHeight * line + nodePadding[0]+nodePadding[2], text: displayStr, maxWidth, lineHeight, lastWidth }
+        const style = { width, height: lineHeight * line + delta, text: displayStr, maxWidth, lineHeight, lastWidth }
         return style;
     }
 
@@ -2328,7 +2325,7 @@ export class MindGraph extends TreeGraph {
                 ...options
             }
         }
-        
+
         edge.getSource().get('model').edgeConfig = this.links[sourceId];
         edge.draw();
     }
@@ -2414,6 +2411,6 @@ export class MindGraph extends TreeGraph {
     getEdgeArrorConfig(edge: Edge) {
         const targetId: any = edge.getTarget().getModel().id;
         const config = edge.getSource().get('model').edgeConfig;
-        return config? config[targetId]:undefined;
+        return config ? config[targetId] : undefined;
     }
 }
