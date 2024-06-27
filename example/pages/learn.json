@@ -1,70 +1,49 @@
 [
     {
-        "info": {
-            "id": "461c46a75fff5ffe6691",
-            "title": "Acccdsfsffdsfsdfsdfsdfsdfdsfdsfsdfsdfsdsfsfsdfsdfsdfsdfsdfsdfdsfsdfsdfdsds",
-            "rectStyle": {
-                "fill": "#c00",
-                "lineWidth": 2
-            },
-            "textStyle": {
-                "fill": "#fff",
-                "fontSize": 18,
-                "lineHeight": 25
-            }
+        "id": "461c46a75fff5ffe6691",
+        "title": "Acccdsfsffdsfsdfsdfsdfsdfdsfdsfsdfsdfsdsfsfsdfsdfsdfsdfsdfsdfdsfsdfsdfdsds",
+        "rectStyle": {
+            "fill": "#c00",
+            "lineWidth": 2
+        },
+        "textStyle": {
+            "fill": "#fff",
+            "fontSize": 18,
+            "lineHeight": 25
         },
         "children": [
             {
-                "info": {
-                    "id": "1640c2b523400116f7ff0",
-                    "title": "新建模型",
-                    "iconType":1
-                },
+                "id": "1640c2b523400116f7ff0",
+                "title": "新建模型",
                 "children": [
                     {
-                        "info": {
-                            "id": "1640c2b523400116f7cff0",
-                            "title": "CCCdddd",
-                            "iconType":1,
-                            "iconDetail": {
-                                "marked": false
-                            }
+                        "id": "1640c2b523400116f7cff0",
+                        "nodeType": "image",
+                        "url": "./test.png",
+                        "rectStyle": {
+                            "width": 240,
+                            "height": 132
                         }
                     },
                     {
-                        "info": {
-                            "id": "12640c2b593416fd7ff3",
-                            "title": "CeDDDeee",
-                            "iconDetail": {
-                                "marked": true
-                            }
-                        },
+                        "id": "12640c2b593416fd7ff3",
+                        "title": "CeDDDeee",
                         "children": [
                             {
-                                "info": {
-                                    "id": "1640c2bd523400116f7cff0",
-                                    "title": "DFFDDF",
-                                    "iconType":1
-                                }
+                                "id": "1640c2bd523400116f7cff0",
+                                "title": "DFFDDF"
                             },
                             {
-                                "info": {
-                                    "id": "12640c2b5f93416fd7ff3",
-                                    "title": "DFSDSSFDS"
-                                },
+                                "id": "12640c2b5f93416fd7ff3",
+                                "title": "DFSDSSFDS",
                                 "children": [
                                     {
-                                        "info": {
-                                            "id": "1640c2bc23400116f7cff0",
-                                            "title": "CCCcdDddd",
-                                            "iconType":1
-                                        }
+                                        "id": "1640c2bc23400116f7cff0",
+                                        "title": "CCCcdDddd"
                                     },
                                     {
-                                        "info": {
-                                            "id": "12640c2b5f93d6fd7ff3",
-                                            "title": "CeDDDCeee"
-                                        },
+                                        "id": "12640c2b5f93d6fd7ff3",
+                                        "title": "CeDDDCeee",
                                         "children": null
                                     }
                                 ]
@@ -74,11 +53,19 @@
                 ]
             },
             {
-                "info": {
-                    "id": "12640c2b593416f7ff3",
-                    "title": "Ceeee"
+                "id": "12640c2b593416f7ff3",
+                "nodeType": "video",
+                "url": "./test.png",
+                "rectStyle": {
+                    "width": 240,
+                    "height": 132
                 },
-                "children": null
+                "children": [
+                    {
+                        "id": "12640c2b593416f7ffcc",
+                        "title": "CCC"
+                    }
+                ]
             }
         ]
     }

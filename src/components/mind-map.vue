@@ -54,7 +54,7 @@
             v-for="item in toolbarMenus"
             :key="item.key"
             v-show="!item.hide"
-            :class="item.active ? 'active' : ''"
+            :class="{ active: item.active, disabled: item.disabled }"
             @click="onToolbar(item)"
           >
             <el-button>
@@ -125,6 +125,7 @@ const edgeMenuRef = ref();
 const canvasMenu = ref();
 const toolbarMenus = ref(ToolbarMenus);
 const docMenus = ref(DocMenus);
+const selectNode = ref();
 watch(
   () => props.modelValue,
   () => {}
@@ -155,9 +156,22 @@ const formatMenus = (menus: any[]) => {
   });
   return p;
 };
+const getToolbarsMap = () => {
+  const map = {};
+  toolbarMenus.value.forEach((menu) => {
+    map[menu.key] = menu;
+  });
+  return map;
+};
 onMounted(() => {
-  const t = toolbarMenus.value.find((r) => r.key === "hide-link");
-  t.active = props.hideEdge;
+  const map = getToolbarsMap();
+  map["image"].disabled = true;
+  map["icon"].disabled = true;
+  map["func"].disabled = true;
+  map["link"].disabled = true;
+  map["create-article"].disabled = true;
+  map['hide-link'].active = props.hideEdge;
+
   editMode.unshift("drag-canvas", "behavior-canvas", "behavior-pc");
   const p = formatMenus(nodeMenuConfig);
   const p2 = formatMenus(canvasMenuConfig);
@@ -210,7 +224,6 @@ const getEdgeMenusDom = (node: any) => {
     hideMenu(edgeMenuRef.value, "edge-left-arrow");
     hideMenu(edgeMenuRef.value, "edge-right-arrow");
     hideMenu(edgeMenuRef.value, "edge-edit");
-
   } else if (model.type === "round-poly") {
     const config = graph.value.getEdgeArrorConfig(node);
     console.log("-config--", config);
@@ -287,6 +300,14 @@ const initGraph = (isInit = true) => {
     }
     if (e.type === MindmapEvent.edgeCreate) {
       createEdge(e.options);
+    } else if (e.type === MindmapEvent.nodeSelect) {
+      selectNode.value = e.options.node;
+      const map = getToolbarsMap();
+      map["image"].disabled = !e.options.node;
+      map["icon"].disabled = !e.options.node;
+      map["func"].disabled = !e.options.node;
+      map["link"].disabled = !e.options.node;
+      map["create-article"].disabled = !e.options.node;
     }
   });
 };

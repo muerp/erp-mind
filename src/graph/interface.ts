@@ -1,4 +1,8 @@
-
+export enum ItemType {
+  image = 'image',
+  video = 'video',
+  audio = 'audio'
+}
 export interface NodeData {
   title: string, // 节点名称
   id: string, // 节点Id 根节点id '0'

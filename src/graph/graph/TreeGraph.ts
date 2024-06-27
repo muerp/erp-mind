@@ -1,6 +1,6 @@
 import { Edge, TreeGraph } from "@antv/g6";
 // import Hierarchy from '../hierarchy/index.js';
-import { EdgeOptions, InputData, NodeData } from "../interface.js";
+import { EdgeOptions, InputData, ItemType, NodeData } from "../interface.js";
 import {
     addRadius,
     maxFontCount,
@@ -539,7 +539,6 @@ export class MindGraph extends TreeGraph {
                     return this.createDataFromData(child, depth + 1, maxDepth, sortId + '-' + idx, true, isReadyCache);
                 })
         }
-
         return data;
     }
 
@@ -550,6 +549,8 @@ export class MindGraph extends TreeGraph {
         visible = true,
         rectStyle,
         textStyle,
+        nodeType,
+        url,
     }: any) {
         name === "" && (name = placeholderText);
         const btnTextStyle = {
@@ -561,8 +562,13 @@ export class MindGraph extends TreeGraph {
         const descFontWeight = 400;
         const maxNodeSize = fontSize * maxFontCount + paddingH * 2; // 节点最多显示12个字
         const descFontSize = fontSize - 2; // 描述比标题小两个字号
-
-        const nameStyle: any = this.getTextSize(name, btnTextStyle, nodePadding[0] + nodePadding[2])
+        let nameStyle: any;
+        if (nodeType === ItemType.image || nodeType === ItemType.video) {
+            nameStyle = {width: rectStyle.width, height :rectStyle.height};
+        } else {
+            nameStyle = this.getTextSize(name, btnTextStyle, nodePadding[0] + nodePadding[2]);
+        }
+        
 
         const desStyle: any = this.getTextSize(desc, {
             ...btnTextStyle,
@@ -570,16 +576,22 @@ export class MindGraph extends TreeGraph {
             fontWeight: descFontWeight
         })
         const height = nameStyle.height + (desStyle?.height || 0) + 2;
-        const beforeWidth = 0, afterWidth = 0;
-
+        const beforeWidth = 10, afterWidth = 10;
+        let width = visible ? Math.max(nameStyle.width, desStyle?.width || 0) : 0;
+        if ((nodeType !== ItemType.image && nodeType !== ItemType.video) && visible) {
+            width += paddingH * 2;
+        }
+        
         const obj = {
             title: name,
             desc: desc,
+            nodeType,
+            url,
             style: {
                 fontSize,
                 fontWeight,
                 descFontSize,
-                width: visible ? Math.max(nameStyle.width, desStyle?.width || 0) + paddingH * 2 : 0,
+                width,
                 maxWidth: maxNodeSize,
                 height: visible ? height : 0,
                 stroke: 2,
@@ -1481,7 +1493,9 @@ export class MindGraph extends TreeGraph {
     }
 
     editItem(node: any, isReady = false) {
-        this._editor?.show(node, isReady);
+        const nodeType = node.get('model')?.nodeType;
+        if (nodeType !== ItemType.image && nodeType !== ItemType.video)
+            this._editor?.show(node, isReady);
     }
 
     editDisabled() {
@@ -1955,6 +1969,12 @@ export class MindGraph extends TreeGraph {
             }
             this._curSelectedNode = undefined;
         }
+        this.emit(EventName.change, {
+            type: MindmapEvent.nodeSelect,
+            options: {
+                node: undefined
+            }
+        })
     }
     checkNodeEditTitle(node: any) {
         if (!node) return;

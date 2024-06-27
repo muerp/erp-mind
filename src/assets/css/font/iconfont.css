@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont";
-  src: url('iconfont.woff2?t=1717254475791') format('woff2'),
-    url('iconfont.woff?t=1717254475791') format('woff'),
-    url('iconfont.ttf?t=1717254475791') format('truetype');
+  src: url('iconfont.woff2?t=1717345587914') format('woff2'),
+    url('iconfont.woff?t=1717345587914') format('woff'),
+    url('iconfont.ttf?t=1717345587914') format('truetype');
 }
 
 [class^="icon-"],
@@ -11,6 +11,42 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-node:before {
+  content: "\e715";
+}
+
+.icon-css:before {
+  content: "\e61f";
+}
+
+.icon-keyboard:before {
+  content: "\e64e";
+}
+
+.icon-jg:before {
+  content: "\e64b";
+}
+
+.icon-node2:before {
+  content: "\e699";
+}
+
+.icon-theme:before {
+  content: "\e602";
+}
+
+.icon-style:before {
+  content: "\e603";
+}
+
+.icon-theme2:before {
+  content: "\e644";
+}
+
+.icon-tree:before {
+  content: "\e653";
 }
 
 .icon-article:before {

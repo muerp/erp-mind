@@ -26,6 +26,12 @@ export function getAttribute(cfg: any) {
         afterWidth,
     } = getShapeStyle(cfg);
     const { nodeStyle, btnStyle, btnTextStyle, nameStyle } = cfg;
+    const ContentStyle = {
+        y: 0,
+        x: beforeWidth,
+        width: nameStyle.width,
+        height: nameStyle.height
+    }
     const NameStyle = {
         x: beforeWidth + paddingH,
         y: (height || 0) * 0.5 + (isWin ? 2 : 0),
@@ -33,6 +39,10 @@ export function getAttribute(cfg: any) {
         cursor: "pointer",
         opacity,
         ...btnTextStyle,
+    }
+    const CenterStyle = {
+        x: beforeWidth + nameStyle.width*.5,
+        y: (height || 0) * 0.5 + (isWin ? 2 : 0),
     }
     const ContainerStyle = {
         x: 0,
@@ -99,7 +109,7 @@ export function getAttribute(cfg: any) {
         cursor: "pointer",
         opacity,
     };
-    return { ContainerStyle, RectStyle, TextStyle, DescWrapper, DescText, IconStyle, NameStyle, CusorStyle };
+    return { ContainerStyle, RectStyle, TextStyle, DescWrapper, DescText, IconStyle, NameStyle, CusorStyle, ContentStyle, CenterStyle };
 }
 
 const getNode = (group: any, name: string) => group.findAllByName(name)[0];

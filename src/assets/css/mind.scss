@@ -134,6 +134,10 @@
                 color: #7da5fb;
             }
         }
+        &.disabled {
+            pointer-events: none;
+            opacity: 0.3;
+        }
     }
 
     .tollbar-label {

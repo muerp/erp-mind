@@ -9,6 +9,7 @@ import {
 import { EdgeTextPadding, IconLabelSize } from "../nodeTemplate/constant";
 import { isWin } from "../utils/testDevice";
 import { openSingleLink } from "../utils/config";
+import { ItemType } from "..";
 
 registerNode('mindmap-node', {
     // 自定义节点时的配置
@@ -24,7 +25,7 @@ registerNode('mindmap-node', {
         }
     },
     drawMindmapNode(cfg: any, group: any) {
-        const { readyLink, link2, link1, linkIconStyle } = cfg;
+        const { readyLink, link2, link1, linkIconStyle, nodeType, url, nameStyle } = cfg;
         const visible = cfg.style.visible;
         const newNode = new Shape(group);
         if (!visible) {
@@ -38,7 +39,7 @@ registerNode('mindmap-node', {
             return shape
         }
 
-        const { ContainerStyle, RectStyle, NameStyle, DescWrapper, DescText, IconStyle, CusorStyle } = getAttribute(cfg);
+        const { ContainerStyle, RectStyle, NameStyle, DescWrapper, DescText, IconStyle, CusorStyle, ContentStyle, CenterStyle } = getAttribute(cfg);
         const maxNodeWidth = cfg.style.maxWidth;
         const { depth } = cfg;
         const rest = { draggable: false, capture: false }
@@ -52,12 +53,36 @@ registerNode('mindmap-node', {
         if (IconStyle.text) {
             newNode.group.addShape('text', { attrs: IconStyle })
         }
-        newNode.addText('title', NameStyle, rest);
+        if (nodeType === ItemType.image || nodeType === ItemType.video) {
+            newNode.group.addShape('image', {
+                attrs: {
+                    img: url,
+                    ...ContentStyle,
+                },
+                capture: false,
+            })
+            if (nodeType === ItemType.video) {
+                newNode.group.addShape('text', {
+                    attrs: {
+                        text: '\ue904',
+                        fontFamily: 'iconfont',
+                        x: CenterStyle.x - 12,
+                        y: CenterStyle.y + 12,
+                        fontSize: 32,
+                        fill: 'white',
+                    },
+                    capture: false,
+                })
+            }
+        } else if (NameStyle.text) {
+            newNode.addText('title', NameStyle, rest);
+        }
+
         if (cfg.isFocus) {
             const cusor = newNode.Rect(NameString.textCusor, CusorStyle, rest)
-            cusor.animate((r: number)=>{
+            cusor.animate((r: number) => {
                 return {
-                   opacity: r<=0.5? 1-r*2:r*2-1
+                    opacity: r <= 0.5 ? 1 - r * 2 : r * 2 - 1
                 }
             }, {
                 duration: 1200,
@@ -80,7 +105,7 @@ registerNode('mindmap-node', {
                 attrs: {
                     img: linkIconStyle.link2,
                     y: cfg.style.height * 0.5 + (isWin ? 1 : 0) - IconLabelSize.width * 0.5,
-                    x: RectStyle.x + RectStyle.width - IconLabelSize.width - 8 - (link1&&openSingleLink? IconLabelSize.width+4:0),
+                    x: RectStyle.x + RectStyle.width - IconLabelSize.width - 8 - (link1 && openSingleLink ? IconLabelSize.width + 4 : 0),
                     width: IconLabelSize.width,
                     height: IconLabelSize.width,
                 }
@@ -120,7 +145,7 @@ registerNode('mindmap-node', {
             drawLabel(cfg, { x: labelStyle.width * 0.5 + EdgeTextPadding.h, y: cy }, newNode.group, '');
             newNode.group.addShape('path', {
                 attrs: {
-                    path: `M ${labelStyle.width + EdgeTextPadding.h * 2},${cy} L ${labelStyle.width + 16 + delta},${cy} L ${labelStyle.width + 28+delta},${cy} Z`,
+                    path: `M ${labelStyle.width + EdgeTextPadding.h * 2},${cy} L ${labelStyle.width + 16 + delta},${cy} L ${labelStyle.width + 28 + delta},${cy} Z`,
                     stroke: linkLabelLineStyle.stoke,
                     lineWidth: 2,
                 }

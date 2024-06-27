@@ -22,6 +22,16 @@ export const ToolbarMenus = [
         }
     },
     {
+        icon: 'icon-relevance',
+        label: '隐藏关联',
+        key: 'hide-link',
+        handler(graph: MindGraph, item: any) {
+            item.active = !item.active;
+            item.label = item.active ? "显示关联" : "隐藏关联";
+            graph.setEdgeVisible(item.active);
+        }
+    },
+    {
         icon: 'icon-article',
         label: '创作内容',
         key: 'create-article',
@@ -38,16 +48,7 @@ export const ToolbarMenus = [
     //         graph.editSelectLink(graph._curSelectedNode, 2);
     //     }
     // },
-    {
-        icon: 'icon-relevance',
-        label: '隐藏关联',
-        key: 'hide-link',
-        handler(graph: MindGraph, item: any) {
-            item.active = !item.active;
-            item.label = item.active ? "显示关联" : "隐藏关联";
-            graph.setEdgeVisible(item.active);
-        }
-    },
+    
     // {
     //     icon: 'icon-label2',
     //     label: '隐藏标签',
@@ -99,7 +100,6 @@ export const ToolbarMenus = [
         }
     },
 ]
-
 export const DocMenus = [
     {
         icon: 'icon-doc',
